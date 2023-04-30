@@ -19,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/pedido", "/produtos", "/pedido/atualizar/**","/pedido/cancelar/**", "/pedido/buscar/**" ).permitAll()
+                .antMatchers("/pedido", "/produtos", "/pedido/atualizar/**","/pedido/cancelar/**", "/pedido/buscar/**", "/notafiscal" ).permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
