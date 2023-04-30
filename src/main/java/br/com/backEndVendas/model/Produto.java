@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private int idProduto;
 
     private String nomeProduto;
 
