@@ -1,12 +1,14 @@
 package br.com.backEndVendas.model;
 
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class Item{
     @Column(name = "preco_unitario")
     @NotNull(message = "Esse campo não pode ser nulo")
     @NotBlank(message = "Esse campo não pode estar vazio")
-    private double precoUnitario;
+    private String precoUnitario;
 
 
 }

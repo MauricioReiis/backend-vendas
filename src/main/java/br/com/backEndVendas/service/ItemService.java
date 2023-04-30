@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.Double.parseDouble;
+
 @Service
 public class ItemService {
 
@@ -15,7 +17,7 @@ public class ItemService {
     ItemDao iDao;
 
     public boolean isValid(Item item){
-        return (item.getPrecoUnitario() > 0);
+        return (parseDouble(item.getPrecoUnitario()) > 0);
     }
 
     public Item save(Item item){
@@ -43,7 +45,7 @@ public class ItemService {
         }
     }
 
-    public Item updateItem(int id, Item item) throws Exception {
+    public Item atualizarItem(int id, Item item) throws Exception {
         Item i = buscaItemPeloId(id);
         if (i == null) {
             throw new Exception("Item não encontrado!");
@@ -59,4 +61,6 @@ public class ItemService {
     public List<Item> exibeTodosItens() {
         return iDao.findAll();
     }
+
+
 }
