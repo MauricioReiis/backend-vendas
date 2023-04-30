@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProdutoResource {
 
     @Autowired
-    ProdutoServiceService prodServ;
+    ProdutoService prodServ;
 
     @PostMapping
     public Produto adicionarPedido(@RequestBody Produto produto){
