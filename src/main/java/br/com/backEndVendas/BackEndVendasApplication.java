@@ -1,4 +1,4 @@
-package br.com.backEndVendas.demo;
+package br.com.backEndVendas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,4 +9,5 @@ public class BackEndVendasApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BackEndVendasApplication.class, args);
 	}
+
 }

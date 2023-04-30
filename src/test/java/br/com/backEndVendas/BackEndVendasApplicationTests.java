@@ -1,4 +1,4 @@
-package br.com.backEndVendas.demo;
+package br.com.backEndVendas;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
