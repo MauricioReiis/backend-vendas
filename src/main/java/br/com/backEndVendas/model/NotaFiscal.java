@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class NotaFiscal {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idNota;
+    private int id;
     private int idPedido;
     private double valorTotal;
     private int idCliente;
