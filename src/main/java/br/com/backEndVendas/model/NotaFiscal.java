@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "NotaFiscal")
@@ -14,16 +15,20 @@ import java.time.LocalDate;
 public class NotaFiscal {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private int idPedido;
-    private double valorTotal;
-    private int idCliente;
-    private LocalDate dataPedido;
+    private int Id_Nota;
+    private int Id_Item;
+    private int Id_Pedido;
+    private double Valor_Total_Itens;
+    private int Quantidade;
 
-    public NotaFiscal(Pedido pedido) {
-        idPedido = pedido.getIdPedido();
-        valorTotal = Double.parseDouble(pedido.getPrecoTotal());
-        idCliente = pedido.getIdCliente();
-        dataPedido = pedido.getDataPedido();
-    }
+//    public NotaFiscal(Pedido pedido, List<Item> itens) {
+//        Id_Pedido = pedido.getIdPedido();
+//        Quantidade = itens.size();
+//        double total = 0.0;
+//        for (Item item : itens) {
+//            double valorTotal = Double.parseDouble(item.getPrecoUnitario()) * item.getQuantidade();
+//        }
+//        Valor_Total_Itens = total;
+//    }
 }
+
