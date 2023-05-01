@@ -19,4 +19,6 @@ public class Produto {
     private String nomeProduto;
 
     private  int qtdEstoque;
+
+    private double precoUnit;
 }
