@@ -20,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/pedido", "/produtos", "/pedido/atualizar/**","/pedido/cancelar/**", "/pedido/buscar/**",
-                    "/item", "/item/listar/**", "/item/atualizar/**", "/item/deletar/**").permitAll()
+                    "/item", "/item/listar/**", "/item/atualizar/**", "/item/deletar/**", "/notafiscal", "/notafiscal/buscar/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
