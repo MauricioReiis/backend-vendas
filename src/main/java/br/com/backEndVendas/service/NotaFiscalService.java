@@ -17,7 +17,7 @@ public class NotaFiscalService {
     public NotaFiscal save(NotaFiscal notaFiscal){return nfdao.save(notaFiscal);
     }
 
-    public NotaFiscal buscarPedidoPeloId(int id) {
+    public NotaFiscal buscarNotaFiscalPeloId(int id) {
         Optional<NotaFiscal> notaFiscalOptional = nfdao.findById(id);
         if (notaFiscalOptional.isPresent()) {
             return notaFiscalOptional.get();
