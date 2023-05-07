@@ -15,26 +15,14 @@ import java.util.List;
 @Entity
 @Table(name = "Pedido")
 public class Pedido {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int idPedido;
-
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ItemPedido> itemPedido = new ArrayList<>();
-
+    @OneToMany(mappedBy = "pedido")
+    private List<ItemPedido> itensPedido;
     private double precoTotal;
-
     private int idCliente;
     private int idVendedor;
     private LocalDate dataPedido;
 
-
-    public Pedido(List<ItemPedido> itemPedido, double precoTotal, int idCliente, int idVendedor, LocalDate dataPedido) {
-        this.itemPedido = new ArrayList<>();
-        this.precoTotal = precoTotal;
-        this.idCliente = idCliente;
-        this.idVendedor = idVendedor;
-        this.dataPedido = dataPedido;
-    }
 }

@@ -7,23 +7,26 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "NotaFiscal")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NotaFiscal {
+@Table(name = "NotaVenda")
+public class NotaVenda {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private int idNotaVenda;
     private int idPedido;
-    private double valorTotal;
     private int idCliente;
-    private LocalDate dataPedido;
+    private int idVendedor;
+    private double valorTotal;
+    private LocalDate dataEmissao;
 
-    public NotaFiscal(Pedido pedido) {
+
+    public NotaVenda(Pedido pedido) {
         idPedido = pedido.getIdPedido();
-
         idCliente = pedido.getIdCliente();
-        dataPedido = pedido.getDataPedido();
+        idVendedor = pedido.getIdVendedor();
+        valorTotal = pedido.getPrecoTotal();
+        dataEmissao= pedido.getDataPedido();
     }
 }

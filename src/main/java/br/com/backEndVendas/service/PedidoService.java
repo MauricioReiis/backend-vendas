@@ -1,12 +1,14 @@
 package br.com.backEndVendas.service;
 
 import br.com.backEndVendas.model.ItemPedido;
+import br.com.backEndVendas.model.NotaVenda;
 import br.com.backEndVendas.model.Pedido;
+import br.com.backEndVendas.service.dao.ItemPedidoDao;
+import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -15,17 +17,19 @@ public class PedidoService {
     @Autowired
     PedidoDao pdao;
     @Autowired
-    ItemPedidoService itemPedidoService;
+    NotaVendaDao notaVendaDao;
 
-    public Pedido save(Pedido pedido){
-        if (pedido.getItemPedido() != null) {
-            for (ItemPedido item : pedido.getItemPedido()) {
-                item.setPedido(pedido);
-                itemPedidoService.save(item);
-            }
-        }
-        return pdao.save(pedido);
+    @Autowired
+    ItemPedidoDao itemPedidoDao;
+
+    public NotaVenda save(Pedido pedido){
+        NotaVenda notaVenda = new NotaVenda(pedido);
+        ItemPedido itemPedido = new ItemPedido(pedido);
+        itemPedidoDao.save(itemPedido);
+        pdao.save(pedido);
+        return notaVendaDao.save(notaVenda);
     }
+
     public Pedido updatePedido(int id, Pedido pedido) throws Exception {
         Pedido p = buscarPedidoPeloId(id);
         if (p == null){

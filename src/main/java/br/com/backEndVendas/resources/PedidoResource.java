@@ -1,5 +1,6 @@
 package br.com.backEndVendas.resources;
 
+import br.com.backEndVendas.model.NotaVenda;
 import br.com.backEndVendas.model.Pedido;
 import br.com.backEndVendas.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class PedidoResource {
     PedidoService pServ;
 
     @PostMapping
-    public Pedido adicionarPedido(@RequestBody Pedido pedido){
+    public NotaVenda adicionarPedido(@RequestBody Pedido pedido){
         return pServ.save(pedido);
     }
 
