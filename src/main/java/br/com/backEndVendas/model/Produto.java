@@ -21,4 +21,5 @@ public class Produto {
     private  int qtdEstoque;
 
     private double precoUnit;
+
 }

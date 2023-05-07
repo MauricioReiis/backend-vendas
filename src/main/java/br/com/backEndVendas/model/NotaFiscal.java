@@ -22,7 +22,7 @@ public class NotaFiscal {
 
     public NotaFiscal(Pedido pedido) {
         idPedido = pedido.getIdPedido();
-        valorTotal = Double.parseDouble(pedido.getPrecoTotal());
+
         idCliente = pedido.getIdCliente();
         dataPedido = pedido.getDataPedido();
     }
