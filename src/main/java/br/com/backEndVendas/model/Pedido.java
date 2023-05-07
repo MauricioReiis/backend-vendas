@@ -18,11 +18,11 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int idPedido;
-    @OneToMany(mappedBy = "pedido")
-    private List<ItemPedido> itensPedido;
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemPedido> itensPedido = new ArrayList<>();
     private double precoTotal;
-    private int idCliente;
-    private int idVendedor;
+    private long idCliente;
+    private long idVendedor;
     private LocalDate dataPedido;
 
 }

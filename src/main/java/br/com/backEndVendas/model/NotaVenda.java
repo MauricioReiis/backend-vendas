@@ -24,8 +24,6 @@ public class NotaVenda {
 
     public NotaVenda(Pedido pedido) {
         idPedido = pedido.getIdPedido();
-        idCliente = pedido.getIdCliente();
-        idVendedor = pedido.getIdVendedor();
         valorTotal = pedido.getPrecoTotal();
         dataEmissao= pedido.getDataPedido();
     }

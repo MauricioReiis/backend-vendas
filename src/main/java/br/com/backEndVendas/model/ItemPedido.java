@@ -11,18 +11,16 @@ import javax.persistence.*;
 @Table(name = "ItemPedido")
 public class ItemPedido{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idItemPedido;
-    @ManyToOne
-    @JoinColumn(name = "idPedido")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_pedido")
     private Pedido pedido;
-    private int idProduto;
+    private long idProduto;
     private int quantidade;
 
     public ItemPedido(Pedido pedido) {
         System.out.println(pedido);
-        idProduto = pedido.getIdCliente();
-        quantidade = pedido.getIdVendedor();
 
     }
 
