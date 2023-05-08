@@ -13,7 +13,7 @@ public class NotaVendaService {
     @Autowired
     NotaVendaDao nfdao;
 
-    public NotaVenda buscarNotaPeloId(int id) {
+    public NotaVenda buscarNotaPeloId(long id) {
         Optional<NotaVenda> notaVendaOptional = nfdao.findById(id);
         if (notaVendaOptional.isPresent()) {
             return notaVendaOptional.get();

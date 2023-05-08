@@ -20,9 +20,13 @@ public class Pedido {
     private int idPedido;
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedido> itensPedido = new ArrayList<>();
+
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private NotaVenda notaVenda;
     private double precoTotal;
     private long idCliente;
     private long idVendedor;
     private LocalDate dataPedido;
+
 
 }

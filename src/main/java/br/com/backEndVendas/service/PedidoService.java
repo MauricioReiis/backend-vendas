@@ -28,13 +28,6 @@ public class PedidoService {
     @Autowired
     ItemPedidoDao itemPedidoDao;
 
-    public NotaVenda save(Pedido pedido){
-        NotaVenda notaVenda = new NotaVenda(pedido);
-        ItemPedido itemPedido = new ItemPedido(pedido);
-        itemPedidoDao.save(itemPedido);
-        pdao.save(pedido);
-        return notaVendaDao.save(notaVenda);
-    }
 
     public Pedido updatePedido(int id, Pedido pedido) throws Exception {
         Pedido p = buscarPedidoPeloId(id);
@@ -73,9 +66,9 @@ public class PedidoService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(pedidoJson);
 
-        Double precoTotal = jsonNode.get("precoTotal").asDouble();
-        Long idCliente = jsonNode.get("idCliente").asLong();
-        Long idVendedor = jsonNode.get("idVendedor").asLong();
+        double precoTotal = jsonNode.get("precoTotal").asDouble();
+        long idCliente = jsonNode.get("idCliente").asLong();
+        long idVendedor = jsonNode.get("idVendedor").asLong();
         LocalDate dataPedido = LocalDate.parse(jsonNode.get("dataPedido").asText());
 
         Pedido pedido = new Pedido();
@@ -86,8 +79,8 @@ public class PedidoService {
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         for (JsonNode itemJson : jsonNode.get("itensPedido")) {
-            Long idProduto = itemJson.get("idProduto").asLong();
-            Integer quantidade = itemJson.get("quantidade").asInt();
+            long idProduto = itemJson.get("idProduto").asLong();
+            int quantidade = itemJson.get("quantidade").asInt();
 
             ItemPedido itemPedido = new ItemPedido();
             itemPedido.setPedido(pedido);
@@ -100,5 +93,20 @@ public class PedidoService {
         pedido.setItensPedido(itensPedido);
 
         pdao.save(pedido);
+
+        List<Long> idsProduto = new ArrayList<>();
+        for (ItemPedido itemPedido : pedido.getItensPedido()) {
+            idsProduto.add(itemPedido.getIdProduto());
+        }
+
+        NotaVenda notaVenda = new NotaVenda();
+        notaVenda.setPedido(pedido);
+        notaVenda.setIdCliente(idCliente);
+        notaVenda.setIdVendedor(idVendedor);
+        notaVenda.setValorTotal(precoTotal);
+        notaVenda.setDataEmissao(LocalDate.now());
+        notaVenda.setIdsProduto(idsProduto);
+
+        notaVendaDao.save(notaVenda);
     }
 }

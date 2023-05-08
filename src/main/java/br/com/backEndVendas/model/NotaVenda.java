@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -12,19 +13,23 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Table(name = "NotaVenda")
 public class NotaVenda {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idNotaVenda;
-    private int idPedido;
-    private int idCliente;
-    private int idVendedor;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @OneToOne
+    @JoinColumn(name = "idPedido")
+    private Pedido pedido;
+
+    private long idCliente;
+
+    private long idVendedor;
+
     private double valorTotal;
+
     private LocalDate dataEmissao;
 
+    @ElementCollection
+    private List<Long> idsProduto;
 
-    public NotaVenda(Pedido pedido) {
-        idPedido = pedido.getIdPedido();
-        valorTotal = pedido.getPrecoTotal();
-        dataEmissao= pedido.getDataPedido();
-    }
 }

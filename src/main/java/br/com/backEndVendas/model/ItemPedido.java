@@ -19,9 +19,5 @@ public class ItemPedido{
     private long idProduto;
     private int quantidade;
 
-    public ItemPedido(Pedido pedido) {
-        System.out.println(pedido);
-
-    }
 
 }
