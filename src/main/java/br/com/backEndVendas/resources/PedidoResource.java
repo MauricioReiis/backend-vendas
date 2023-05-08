@@ -15,10 +15,15 @@ public class PedidoResource {
     PedidoService pServ;
 
     @PostMapping
-    public Pedido adicionarPedido(@RequestBody Pedido pedido){
-        return pServ.save(pedido);
+    public ResponseEntity<?> criarPedido(@RequestBody String pedidoJson) {
+        try {
+            pServ.processarPedido(pedidoJson);
+            String mensagemDeRetorno = "Pedido efetuado com sucesso!";
+            return ResponseEntity.ok(mensagemDeRetorno);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
-
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<?> updadePedido(@PathVariable int id, @RequestBody Pedido pedido){
         try{

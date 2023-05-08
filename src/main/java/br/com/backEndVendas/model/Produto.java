@@ -15,10 +15,8 @@ public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int idProduto;
-
     private String nomeProduto;
-
     private  int qtdEstoque;
-
     private double precoUnit;
+
 }
