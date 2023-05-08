@@ -43,8 +43,8 @@ public class PedidoService {
 
     }
 
-    public  Pedido buscarPedidoPeloId(long id){
-        Optional<Pedido> op = pdao.findById(id);
+    public  Pedido buscarPedidoPeloId(int id){
+        Optional<Pedido> op = pdao.findById((long) id);
         if (op.isPresent()){
             return  op.get();
         }else {
@@ -105,7 +105,6 @@ public class PedidoService {
         notaVenda.setIdVendedor(idVendedor);
         notaVenda.setValorTotal(precoTotal);
         notaVenda.setDataEmissao(LocalDate.now());
-        notaVenda.setIdsProduto(idsProduto);
 
         notaVendaDao.save(notaVenda);
     }

@@ -29,7 +29,5 @@ public class NotaVenda {
 
     private LocalDate dataEmissao;
 
-    @ElementCollection
-    private List<Long> idsProduto;
 
 }
