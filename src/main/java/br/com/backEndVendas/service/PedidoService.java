@@ -3,9 +3,11 @@ package br.com.backEndVendas.service;
 import br.com.backEndVendas.model.ItemPedido;
 import br.com.backEndVendas.model.NotaVenda;
 import br.com.backEndVendas.model.Pedido;
+import br.com.backEndVendas.model.Produto;
 import br.com.backEndVendas.service.dao.ItemPedidoDao;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
+import br.com.backEndVendas.service.dao.ProdutoDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +29,12 @@ public class PedidoService {
 
     @Autowired
     ItemPedidoDao itemPedidoDao;
+
+    @Autowired
+    ProdutoDao produtoDao;
+
+    @Autowired
+    ProdutoService produtoService;
 
 
     public Pedido updatePedido(int id, Pedido pedido) throws Exception {
@@ -61,8 +69,7 @@ public class PedidoService {
         return "Pedido cancelado com sucesso!";
     }
 
-
-    public void processarPedido(String pedidoJson) throws JsonProcessingException {
+    public boolean processarPedido(String pedidoJson) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(pedidoJson);
 
@@ -78,16 +85,33 @@ public class PedidoService {
         pedido.setDataPedido(dataPedido);
 
         List<ItemPedido> itensPedido = new ArrayList<>();
-        for (JsonNode itemJson : jsonNode.get("itensPedido")) {
-            int idProduto = itemJson.get("idProduto").asInt();
-            int quantidade = itemJson.get("quantidade").asInt();
+        JsonNode itensPedidoNode = jsonNode.get("itensPedido");
+        if (itensPedidoNode != null && itensPedidoNode.isArray()) {
+            for (JsonNode itemJson : itensPedidoNode) {
+                JsonNode idProdutoNode = itemJson.get("idProduto");
+                JsonNode quantidadeNode = itemJson.get("quantidade");
 
-            ItemPedido itemPedido = new ItemPedido();
-            itemPedido.setPedido(pedido);
-            itemPedido.setIdProduto(idProduto);
-            itemPedido.setQuantidade(quantidade);
+                if (idProdutoNode != null && quantidadeNode != null) {
+                    int idProduto = idProdutoNode.asInt();
+                    int quantidade = quantidadeNode.asInt();
 
-            itensPedido.add(itemPedido);
+                    Produto p = produtoService.buscarProdutoPeloId(idProduto);
+                    String produtoJson = objectMapper.writeValueAsString(p);
+
+                    boolean quantidadeIndisponivel = produtoService.verificarEstoqueDisponível(produtoJson, quantidade);
+
+                    if (!quantidadeIndisponivel) {
+                        return false;
+                    }
+
+                    ItemPedido itemPedido = new ItemPedido();
+                    itemPedido.setPedido(pedido);
+                    itemPedido.setIdProduto(idProduto);
+                    itemPedido.setQuantidade(quantidade);
+
+                    itensPedido.add(itemPedido);
+                }
+            }
         }
 
         pedido.setItensPedido(itensPedido);
@@ -107,5 +131,8 @@ public class PedidoService {
         notaVenda.setDataEmissao(LocalDate.now());
 
         notaVendaDao.save(notaVenda);
+
+        return true;
     }
+
 }
