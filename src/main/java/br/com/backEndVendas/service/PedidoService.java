@@ -44,7 +44,7 @@ public class PedidoService {
     }
 
     public  Pedido buscarPedidoPeloId(int id){
-        Optional<Pedido> op = pdao.findById((long) id);
+        Optional<Pedido> op = pdao.findById(id);
         if (op.isPresent()){
             return  op.get();
         }else {
@@ -67,8 +67,8 @@ public class PedidoService {
         JsonNode jsonNode = objectMapper.readTree(pedidoJson);
 
         double precoTotal = jsonNode.get("precoTotal").asDouble();
-        long idCliente = jsonNode.get("idCliente").asLong();
-        long idVendedor = jsonNode.get("idVendedor").asLong();
+        int idCliente = jsonNode.get("idCliente").asInt();
+        int idVendedor = jsonNode.get("idVendedor").asInt();
         LocalDate dataPedido = LocalDate.parse(jsonNode.get("dataPedido").asText());
 
         Pedido pedido = new Pedido();
@@ -79,7 +79,7 @@ public class PedidoService {
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         for (JsonNode itemJson : jsonNode.get("itensPedido")) {
-            long idProduto = itemJson.get("idProduto").asLong();
+            int idProduto = itemJson.get("idProduto").asInt();
             int quantidade = itemJson.get("quantidade").asInt();
 
             ItemPedido itemPedido = new ItemPedido();
