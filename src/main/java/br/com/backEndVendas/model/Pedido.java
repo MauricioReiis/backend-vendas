@@ -1,5 +1,6 @@
 package br.com.backEndVendas.model;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "Pedido")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idPedido")
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,8 +25,8 @@ public class Pedido {
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private NotaVenda notaVenda;
     private double precoTotal;
-    private long idCliente;
-    private long idVendedor;
+    private int idCliente;
+    private int idVendedor;
     private LocalDate dataPedido;
 
 
