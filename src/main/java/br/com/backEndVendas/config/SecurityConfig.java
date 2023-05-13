@@ -5,7 +5,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 
@@ -19,7 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/pedido/**", "/produtos", "/pedido/atualizar/**","/pedido/cancelar/**", "/pedido/buscar/**",
+                .antMatchers("/pedido/**", "/produtos/**", "/pedido/atualizar/**","/pedido/cancelar/**", "/pedido/buscar/**",
                     "/item", "/item/listar/**", "/item/atualizar/**", "/item/deletar/**", "/notafiscal", "/notafiscal/buscar/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
