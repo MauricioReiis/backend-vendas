@@ -9,6 +9,7 @@ import br.com.backEndVendas.service.dao.ItemPedidoDao;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dao.ProdutoDao;
+import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
 import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Service
 public class PedidoService {
 
     @Autowired
@@ -81,6 +84,7 @@ public class PedidoService {
         return result;
     }
 
+
     public int processarPedido(String pedidoJson) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(pedidoJson);
@@ -116,7 +120,11 @@ public class PedidoService {
                     int idProduto = idProdutoNode.asInt();
                     int quantidade = quantidadeNode.asInt();
 
-                    Produto p = produtoService.buscarProdutoPeloId(idProduto);
+                    CompraBuscarProdutoDto p = produtoService.produtoPeloId(idProduto);
+                    if(p == null){
+                        return 1;
+                    }
+
                     String produtoJson = objectMapper.writeValueAsString(p);
 
                     int validarEstoque = produtoService.verificarEstoqueDisponível(produtoJson, quantidade);
