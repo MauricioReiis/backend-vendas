@@ -179,4 +179,15 @@ public class PedidoService {
         return fret;
     }
 
+        public double  valorMensalVendedor(int idVendedor, int ano, int mes){
+
+        double somaValor = 0;
+
+        List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
+        for(Pedido p : listaPedidos){
+                    somaValor += p.getPrecoTotal();
+        }
+        return somaValor;
+        }
+
 }

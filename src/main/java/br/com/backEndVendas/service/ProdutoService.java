@@ -53,8 +53,6 @@ public class ProdutoService {
         }
     }
 
-
-
     public  boolean verificarProdutoExistente(int id){
         Optional<Produto> op = prodao.findById(id);
         if (op.isPresent()){
