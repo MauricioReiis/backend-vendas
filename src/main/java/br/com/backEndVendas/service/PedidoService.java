@@ -95,7 +95,7 @@ public class PedidoService {
         int idCliente = jsonNode.get("idCliente").asInt();
         int idVendedor = jsonNode.get("idVendedor").asInt();
         int idCarrinho = jsonNode.get("idCarrinho").asInt();
-        boolean pedidoAberto = jsonNode.get("pedidoAberto").asBoolean();
+        String statusPedido = jsonNode.get("statusPedido").asText();
 
         LocalDate dataPedido = LocalDate.parse(jsonNode.get("dataPedido").asText());
 
@@ -109,7 +109,7 @@ public class PedidoService {
         pedido.setIdVendedor(idVendedor);
         pedido.setDataPedido(dataPedido);
         pedido.setIdCarrinho(idCarrinho);
-        pedido.setPedidoAberto(pedidoAberto);
+        pedido.setStatusPedido(statusPedido);
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         JsonNode itensPedidoNode = jsonNode.get("itensPedido");

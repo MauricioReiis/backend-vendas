@@ -29,7 +29,7 @@ public class Pedido {
     private int idVendedor;
 
     private int idCarrinho;
-    private boolean pedidoAberto;
+    private String statusPedido;
     private LocalDate dataPedido;
 
 
