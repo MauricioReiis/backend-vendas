@@ -59,7 +59,7 @@ public class ProdutoService {
         prodao.delete(p);
         return "Produto cancelado com sucesso!";
     }
-    public boolean verificarEstoqueDisponível(String produtoJson, int quantidade) throws JsonProcessingException {
+    public int verificarEstoqueDisponível(String produtoJson, int quantidade) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(produtoJson);
 
@@ -71,7 +71,7 @@ public class ProdutoService {
             int idProduto = idProdutoNode.asInt();
 
             if (!verificarProdutoExistente(idProduto)){
-                return false;
+                return 1;
             }
 
             Produto p = buscarProdutoPeloId(idProduto);
@@ -79,11 +79,11 @@ public class ProdutoService {
             if (p.getQtdEstoque() >= quantidade) {
                 p.setQtdEstoque(p.getQtdEstoque() - quantidade);
                 prodao.save(p);
-                return true;
+                return 2;
             }
         }
 
-        return false;
+        return 3;
     }
 
 }

@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 @RequestMapping("/pedido")
 @RestController
@@ -22,17 +21,11 @@ public class PedidoResource {
 
     @PostMapping
     public ResponseEntity<?> criarPedido(@RequestBody String pedidoJson) {
-        try {
-            boolean pedidoProcessado = pServ.processarPedido(pedidoJson);
-            if (pedidoProcessado) {
-                String mensagemDeRetorno = "Pedido efetuado com sucesso!";
-                return ResponseEntity.ok(mensagemDeRetorno);
-            } else {
-                String mensagemDeRetorno = "Quantidade indisponível ou produto não existente. Pedido não processado.";
-                return ResponseEntity.badRequest().body(mensagemDeRetorno);
-            }
 
-        }catch (Exception e){
+        try{
+            return ResponseEntity.ok(pServ.formatarResposta(pServ.realizarPedido(pedidoJson)));
+        }
+        catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }

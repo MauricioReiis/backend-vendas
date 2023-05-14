@@ -1,5 +1,6 @@
 package br.com.backEndVendas.service;
 
+import br.com.backEndVendas.mock.MockRestTemplate;
 import br.com.backEndVendas.model.ItemPedido;
 import br.com.backEndVendas.model.NotaVenda;
 import br.com.backEndVendas.model.Pedido;
@@ -8,11 +9,15 @@ import br.com.backEndVendas.service.dao.ItemPedidoDao;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dao.ProdutoDao;
+import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,63 +31,79 @@ public class PedidoService {
     PedidoDao pdao;
     @Autowired
     NotaVendaDao notaVendaDao;
-
     @Autowired
     ItemPedidoDao itemPedidoDao;
-
     @Autowired
     ProdutoDao produtoDao;
-
     @Autowired
     ProdutoService produtoService;
+    @Qualifier("mock")
+    @Autowired
+    RestTemplate rest;
 
 
-    public Pedido updatePedido(int id, Pedido pedido) throws Exception {
-        Pedido p = buscarPedidoPeloId(id);
-        if (p == null){
-            throw new Exception("Pedido não encontrado");
-        }
-
-        p.setPrecoTotal(pedido.getPrecoTotal());
-        p.setIdCliente(pedido.getIdCliente());
-        p.setDataPedido(pedido.getDataPedido());
-
-        return  pdao.save(p);
-
-    }
-
-    public  Pedido buscarPedidoPeloId(int id){
+    public Pedido buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
-        if (op.isPresent()){
-            return  op.get();
-        }else {
+        if (op.isPresent()) {
+            return op.get();
+        } else {
             return null;
         }
     }
 
-    public String cancelarPedido(int id) throws Exception {
-        Pedido p = buscarPedidoPeloId(id);
-        if (p == null){
-            throw new Exception("Pedido não encontrado");
-        }
-        pdao.delete(p);
-        return "Pedido cancelado com sucesso!";
+    public String formatarResposta(String resposta) {
+        return "{\"status\": \"" + resposta + "\"}";
     }
 
-    public boolean processarPedido(String pedidoJson) throws JsonProcessingException {
+    public String realizarPedido(String pedidoJson) throws Exception {
+        int pedidoResponse = processarPedido(pedidoJson);
+
+        switch (pedidoResponse) {
+            case 1:
+                throw new Exception("Id de produto inexistente!");
+            case 2:
+                throw new Exception("Quantidade de produto indisponível!");
+            case 3:
+                return "Pedido Realizado com sucesso!";
+            case 4:
+                throw new Exception("Houve um erro com o pagamento do pedido!");
+
+            default:
+                throw new Exception("Erro inesperado!");
+        }
+    }
+
+    public boolean validarCarrinho(int idCarrinho, int idCliente) {
+        String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
+        ResponseEntity<CompraCarrinhoDto> resp = rest.getForEntity(url, CompraCarrinhoDto.class);
+        CompraCarrinhoDto c = resp.getBody();
+        boolean result = c.isPgAprovado();
+        return result;
+    }
+
+    public int processarPedido(String pedidoJson) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(pedidoJson);
 
         double precoTotal = jsonNode.get("precoTotal").asDouble();
         int idCliente = jsonNode.get("idCliente").asInt();
         int idVendedor = jsonNode.get("idVendedor").asInt();
+        int idCarrinho = jsonNode.get("idCarrinho").asInt();
+        boolean pedidoAberto = jsonNode.get("pedidoAberto").asBoolean();
+
         LocalDate dataPedido = LocalDate.parse(jsonNode.get("dataPedido").asText());
+
+        if (validarCarrinho(idCarrinho, idCliente) == false) {
+            return 4;
+        }
 
         Pedido pedido = new Pedido();
         pedido.setPrecoTotal(precoTotal);
         pedido.setIdCliente(idCliente);
         pedido.setIdVendedor(idVendedor);
         pedido.setDataPedido(dataPedido);
+        pedido.setIdCarrinho(idCarrinho);
+        pedido.setPedidoAberto(pedidoAberto);
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         JsonNode itensPedidoNode = jsonNode.get("itensPedido");
@@ -98,10 +119,12 @@ public class PedidoService {
                     Produto p = produtoService.buscarProdutoPeloId(idProduto);
                     String produtoJson = objectMapper.writeValueAsString(p);
 
-                    boolean quantidadeIndisponivel = produtoService.verificarEstoqueDisponível(produtoJson, quantidade);
+                    int validarEstoque = produtoService.verificarEstoqueDisponível(produtoJson, quantidade);
 
-                    if (!quantidadeIndisponivel) {
-                        return false;
+                    if (validarEstoque == 1) {
+                        return 1;
+                    } else if (validarEstoque == 3) {
+                        return 2;
                     }
 
                     ItemPedido itemPedido = new ItemPedido();
@@ -132,7 +155,7 @@ public class PedidoService {
 
         notaVendaDao.save(notaVenda);
 
-        return true;
+        return 3;
     }
 
 }

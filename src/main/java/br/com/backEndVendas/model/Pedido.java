@@ -18,7 +18,7 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idPedido")
 public class Pedido {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idPedido;
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedido> itensPedido = new ArrayList<>();
@@ -27,6 +27,9 @@ public class Pedido {
     private double precoTotal;
     private int idCliente;
     private int idVendedor;
+
+    private int idCarrinho;
+    private boolean pedidoAberto;
     private LocalDate dataPedido;
 
 
