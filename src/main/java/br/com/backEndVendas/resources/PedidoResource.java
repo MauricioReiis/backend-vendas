@@ -1,5 +1,6 @@
 package br.com.backEndVendas.resources;
 
+import br.com.backEndVendas.model.FretPedido;
 import br.com.backEndVendas.model.Pedido;
 import br.com.backEndVendas.service.PedidoService;
 import br.com.backEndVendas.service.dao.PedidoDao;
@@ -33,6 +34,15 @@ public class PedidoResource {
     @GetMapping("buscar/{id}")
     public Pedido getPedido(@PathVariable int id){
         return pServ.buscarPedidoPeloId(id);
+    }
+    @PostMapping("/calcular/fret")
+    public ResponseEntity<?> calcularFretPedido(@RequestBody FretPedido fretPedido){
+        try{
+            return ResponseEntity.ok(pServ.calcularFretPedido(fretPedido));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 }
