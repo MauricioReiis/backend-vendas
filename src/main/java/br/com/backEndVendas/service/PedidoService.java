@@ -1,16 +1,13 @@
 package br.com.backEndVendas.service;
 
-import br.com.backEndVendas.mock.MockRestTemplate;
-import br.com.backEndVendas.model.ItemPedido;
-import br.com.backEndVendas.model.NotaVenda;
-import br.com.backEndVendas.model.Pedido;
-import br.com.backEndVendas.model.Produto;
+import br.com.backEndVendas.model.*;
 import br.com.backEndVendas.service.dao.ItemPedidoDao;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dao.ProdutoDao;
 import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
 import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
+import br.com.backEndVendas.service.dto.EnderecoDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +41,10 @@ public class PedidoService {
     @Qualifier("mock")
     @Autowired
     RestTemplate rest;
+
+    @Autowired
+    FretService fretService;
+
 
 
     public Pedido buscarPedidoPeloId(int id) {
@@ -164,6 +166,17 @@ public class PedidoService {
         notaVendaDao.save(notaVenda);
 
         return 3;
+    }
+
+    public String calcularFretPedido(FretPedido fretPedido) {
+        String numeroString = fretPedido.getCep();
+
+        if(numeroString.length() != 8){
+            throw new EntityNotFoundException("Formato de cep inválido!");
+        }
+
+        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume());
+        return fret;
     }
 
 }
