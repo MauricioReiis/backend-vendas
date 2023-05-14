@@ -185,7 +185,11 @@ public class PedidoService {
 
         List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
         for(Pedido p : listaPedidos){
+            if(p.getDataPedido().getYear()==ano){
+                if(p.getDataPedido().getMonthValue()==mes){
                     somaValor += p.getPrecoTotal();
+                }
+            }
         }
         return somaValor;
         }
