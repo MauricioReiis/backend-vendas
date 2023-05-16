@@ -16,12 +16,12 @@ public class DevolucaoPedido {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        private int id; // código do id da tabela
-        private int codigoPedido; // código do pedido devolvido
+        private int id;
+        private int codigoPedido;
 
-        private String dataDevolucao; // data da devolução
+        private String dataDevolucao;
 
-        private String motivoDevolucao; // motivo da devolução
+        private String motivoDevolucao;
 
 
 }

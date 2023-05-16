@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
 
 @RequestMapping("/pedido")
 @RestController
@@ -22,8 +20,12 @@ public class PedidoResource {
     @Autowired
     PedidoDao pdao;
 
+    @GetMapping
+    public String home() {
+        return "Serviços ON";
+    }
     @PostMapping
-    public ResponseEntity<?> criarPedido(@RequestBody String pedidoJson) {
+    public ResponseEntity<?> criarPedido(@RequestBody Pedido pedidoJson) {
 
         try{
             return ResponseEntity.ok(pServ.formatarResposta(pServ.realizarPedido(pedidoJson)));
@@ -46,9 +48,17 @@ public class PedidoResource {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
     @GetMapping("/calcular/vendedor/{idVendedor}/{ano}/{mes}")
-    public double getValorVendedor(@PathVariable int idVendedor, @PathVariable int ano, @PathVariable int mes)
-    {return pServ.valorMensalVendedor(idVendedor, ano, mes);}
+    public ResponseEntity<?> getValorVendedor(@PathVariable int idVendedor, @PathVariable int ano, @PathVariable int mes)
+    {
+        try{
+            return ResponseEntity.ok(pServ.valorMensalVendedor(idVendedor, ano, mes));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+      }
+
 
 }
