@@ -1,11 +1,13 @@
 package br.com.backEndVendas.service;
 
 import br.com.backEndVendas.model.*;
+import br.com.backEndVendas.service.dao.DevolucaoDao;
 import br.com.backEndVendas.service.dao.ItemPedidoDao;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
 import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
+import br.com.backEndVendas.service.dto.CompraProdutoRetirarDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,9 +18,11 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @Service
@@ -28,8 +32,6 @@ public class PedidoService {
     PedidoDao pdao;
     @Autowired
     NotaVendaDao notaVendaDao;
-    @Autowired
-    ItemPedidoDao itemPedidoDao;
 
     @Autowired
     ProdutoService produtoService;
@@ -40,7 +42,8 @@ public class PedidoService {
     @Autowired
     FretService fretService;
 
-
+    @Autowired
+    DevolucaoPedidoService devolucaoPedidoService;
 
     public Pedido buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
@@ -164,4 +167,78 @@ public class PedidoService {
         return somaValor > 0 ? "{valorVenda: "+somaValor+"}": "Não existe venda!";
     }
 
+    public String cancelarPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida ) throws Exception {
+        Optional<Pedido> op = pdao.findById(idPedido);
+
+        if (op.isPresent()) {
+            LocalDate d = java.time.LocalDate.now();
+            registrarDevolucao(op.get(), idProduto, qtdeDevolvida, d);
+            return "O pedido foi cancelado com sucesso!";
+        } else {
+            return "Falha ao cancelar o pedido";
+        }
+    }
+    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida){
+
+        String url = "https://localhost:8080/compras/produto/devolver/" + cdProduto + "/" + qtdeDevolvida;
+        ResponseEntity<CompraProdutoRetirarDto> resp = rest.getForEntity(url, CompraProdutoRetirarDto.class);
+        CompraProdutoRetirarDto c = resp.getBody();
+
+        return c.isStatus();
+    }
+
+    public String registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
+            if (pedido != null) {
+                DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
+                pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
+                pedidoDevolvido.setCodigoProduto(idProduto);
+                pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
+                pedidoDevolvido.setDataDevolucao(dataDev);
+                verificarPrazoDevolucao(dataDev, qtdeProduto);
+
+                boolean estoqueSuficiente = true;
+                boolean produtoEncontrado = false;
+
+                if (!pedido.getItensPedido().isEmpty()) {
+                    for (ItemPedido item : pedido.getItensPedido()) {
+                        if (item.getIdProduto() != 0 && item.getIdProduto() == idProduto) {
+                            produtoEncontrado = true;
+                            if (item.getQuantidade() < qtdeProduto) {
+                                estoqueSuficiente = false;
+                                break;
+                            } else {
+                                item.setQuantidade(item.getQuantidade() - qtdeProduto);
+                                pedido.setStatusPedido("fechado");
+                                devolucaoPedidoService.save(pedidoDevolvido);
+                                throw new Exception("O produto foi removido com sucesso!");
+                            }
+                        }
+                    }
+                }
+
+                if (!produtoEncontrado) {
+                    throw new Exception("Produto não encontrado no pedido.");
+                } else if (!estoqueSuficiente) {
+                    throw new Exception("Quantidade em estoque insuficiente.");
+                }
+
+                if (!atualizarEstoque(pedidoDevolvido.getCodigoProduto(), pedidoDevolvido.getQtdeDevolvida())) {
+                    throw new Exception("Não foi possível devolver o produto.");
+                }
+                return "Pedido devolvido";
+            } else {
+                throw new Exception("Pedido não encontrado.");
+            }
+    }
+
+    public static boolean verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
+        LocalDate dataAtual = LocalDate.now();
+        long diferencaDias = (ChronoUnit.DAYS.between(dataDevolucao, dataAtual) * -1);
+
+        if (diferencaDias <= diasExpiracao) {
+            return true;
+        } else {
+            throw new Exception("O prazo para devolução expirou.");
+        }
+    }
 }
