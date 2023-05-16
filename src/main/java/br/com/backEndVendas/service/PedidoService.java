@@ -4,13 +4,9 @@ import br.com.backEndVendas.model.*;
 import br.com.backEndVendas.service.dao.ItemPedidoDao;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
-import br.com.backEndVendas.service.dao.ProdutoDao;
 import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
 import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
-import br.com.backEndVendas.service.dto.EnderecoDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +30,7 @@ public class PedidoService {
     NotaVendaDao notaVendaDao;
     @Autowired
     ItemPedidoDao itemPedidoDao;
-    @Autowired
-    ProdutoDao produtoDao;
+
     @Autowired
     ProdutoService produtoService;
     @Qualifier("mock")
@@ -60,7 +55,7 @@ public class PedidoService {
         return "{\"status\": \"" + resposta + "\"}";
     }
 
-    public String realizarPedido(String pedidoJson) throws Exception {
+    public String realizarPedido(Pedido pedidoJson) throws Exception {
         int pedidoResponse = processarPedido(pedidoJson);
 
         switch (pedidoResponse) {
@@ -87,80 +82,55 @@ public class PedidoService {
     }
 
 
-    public int processarPedido(String pedidoJson) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(pedidoJson);
-
-        double precoTotal = jsonNode.get("precoTotal").asDouble();
-        int idCliente = jsonNode.get("idCliente").asInt();
-        int idVendedor = jsonNode.get("idVendedor").asInt();
-        int idCarrinho = jsonNode.get("idCarrinho").asInt();
-        String statusPedido = jsonNode.get("statusPedido").asText();
-
-        LocalDate dataPedido = LocalDate.parse(jsonNode.get("dataPedido").asText());
-
-        if (validarCarrinho(idCarrinho, idCliente) == false) {
+    public int processarPedido(Pedido pedidoJson) throws JsonProcessingException {
+        if (!validarCarrinho(pedidoJson.getIdCarrinho(), pedidoJson.getIdCliente())) {
             return 4;
         }
 
         Pedido pedido = new Pedido();
-        pedido.setPrecoTotal(precoTotal);
-        pedido.setIdCliente(idCliente);
-        pedido.setIdVendedor(idVendedor);
-        pedido.setDataPedido(dataPedido);
-        pedido.setIdCarrinho(idCarrinho);
-        pedido.setStatusPedido(statusPedido);
+        pedido.setPrecoTotal(pedidoJson.getPrecoTotal());
+        pedido.setIdCliente(pedidoJson.getIdCliente());
+        pedido.setIdVendedor(pedidoJson.getIdVendedor());
+        pedido.setDataPedido(pedidoJson.getDataPedido());
+        pedido.setIdCarrinho(pedidoJson.getIdCarrinho());
+        pedido.setStatusPedido(pedidoJson.getStatusPedido());
 
         List<ItemPedido> itensPedido = new ArrayList<>();
-        JsonNode itensPedidoNode = jsonNode.get("itensPedido");
-        if (itensPedidoNode != null && itensPedidoNode.isArray()) {
-            for (JsonNode itemJson : itensPedidoNode) {
-                JsonNode idProdutoNode = itemJson.get("idProduto");
-                JsonNode quantidadeNode = itemJson.get("quantidade");
-
-                if (idProdutoNode != null && quantidadeNode != null) {
-                    int idProduto = idProdutoNode.asInt();
-                    int quantidade = quantidadeNode.asInt();
-
-                    CompraBuscarProdutoDto p = produtoService.produtoPeloId(idProduto);
-                    if(p == null){
-                        return 1;
-                    }
-
-                    String produtoJson = objectMapper.writeValueAsString(p);
-
-                    int validarEstoque = produtoService.verificarEstoqueDisponível(produtoJson, quantidade);
-
-                    if (validarEstoque == 1) {
-                        return 1;
-                    } else if (validarEstoque == 3) {
-                        return 2;
-                    }
-
-                    ItemPedido itemPedido = new ItemPedido();
-                    itemPedido.setPedido(pedido);
-                    itemPedido.setIdProduto(idProduto);
-                    itemPedido.setQuantidade(quantidade);
-
-                    itensPedido.add(itemPedido);
-                }
+        for (ItemPedido itemJson : pedidoJson.getItensPedido()) {
+            CompraBuscarProdutoDto p = produtoService.produtoPeloId(itemJson.getIdProduto());
+            if (p == null) {
+                return 1;
             }
+
+            int validarEstoque = produtoService.verificarEstoqueDisponível(itemJson.getIdProduto(), itemJson.getQuantidade());
+
+            if (validarEstoque == 1) {
+                return 1;
+            } else if (validarEstoque == 3) {
+                return 2;
+            }
+
+            ItemPedido itemPedido = new ItemPedido();
+            itemPedido.setPedido(pedido);
+            itemPedido.setIdProduto(itemJson.getIdProduto());
+            itemPedido.setQuantidade(itemJson.getQuantidade());
+            itensPedido.add(itemPedido);
         }
 
         pedido.setItensPedido(itensPedido);
 
         pdao.save(pedido);
 
-        List<Long> idsProduto = new ArrayList<>();
+        List<Integer> idsProduto = new ArrayList<>();
         for (ItemPedido itemPedido : pedido.getItensPedido()) {
             idsProduto.add(itemPedido.getIdProduto());
         }
 
         NotaVenda notaVenda = new NotaVenda();
         notaVenda.setPedido(pedido);
-        notaVenda.setIdCliente(idCliente);
-        notaVenda.setIdVendedor(idVendedor);
-        notaVenda.setValorTotal(precoTotal);
+        notaVenda.setIdCliente(pedidoJson.getIdCliente());
+        notaVenda.setIdVendedor(pedidoJson.getIdVendedor());
+        notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
         notaVenda.setDataEmissao(LocalDate.now());
 
         notaVendaDao.save(notaVenda);
@@ -177,6 +147,21 @@ public class PedidoService {
 
         String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume());
         return fret;
+    }
+
+    public String  valorMensalVendedor(int idVendedor, int ano, int mes){
+
+        double somaValor = 0;
+
+        List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
+        for(Pedido p : listaPedidos){
+            if(p.getDataPedido().getYear()==ano){
+                if(p.getDataPedido().getMonthValue()==mes){
+                    somaValor += p.getPrecoTotal();
+                }
+            }
+        }
+        return somaValor > 0 ? "{valorVenda: "+somaValor+"}": "Não existe venda!";
     }
 
 }
