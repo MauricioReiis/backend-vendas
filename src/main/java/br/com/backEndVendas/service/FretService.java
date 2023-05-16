@@ -24,7 +24,7 @@ public class FretService {
         EnderecoDto uf = buscarCep(cep);
         int preco = obterPrecoEstado(uf.getUf());
         int preçoFret = preco * qtdeVolume;
-        String message = "{Estado: "+ uf.getUf()+ ", Cidade: "+uf.getLocalidade() + ", Preço fret: "+preçoFret+"}";
+        String message = "Estado: "+ uf.getUf()+ ", Cidade: "+uf.getLocalidade() + ", Preço fret: "+preçoFret+"";
 
         return message;
 
@@ -116,7 +116,7 @@ public class FretService {
                 numero = 270;
                 break;
             default:
-                numero = -1;
+                numero = 1;
                 break;
         }
 

@@ -29,9 +29,8 @@ public class PedidoResource {
     }
     @PostMapping
     public ResponseEntity<?> criarPedido(@RequestBody Pedido pedidoJson) {
-
         try{
-            return ResponseEntity.ok(pServ.formatarResposta(pServ.realizarPedido(pedidoJson)));
+            return ResponseEntity.ok(pServ.realizarPedido(pedidoJson));
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -39,8 +38,16 @@ public class PedidoResource {
     }
 
     @GetMapping("buscar/{id}")
-    public Pedido getPedido(@PathVariable int id){
-        return pServ.buscarPedidoPeloId(id);
+    public ResponseEntity<?> getPedido(@PathVariable int id){
+        {
+            try{
+                return ResponseEntity.ok( pServ.buscarPedidoPeloId(id));
+            }
+            catch (Exception e){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+
+        }
     }
     @PostMapping("/calcular/fret")
     public ResponseEntity<?> calcularFretPedido(@RequestBody FretPedido fretPedido){
