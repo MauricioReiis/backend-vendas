@@ -1,5 +1,6 @@
 package br.com.backEndVendas.resources;
 
+import br.com.backEndVendas.model.DevolucaoPedido;
 import br.com.backEndVendas.model.FretPedido;
 import br.com.backEndVendas.model.Pedido;
 import br.com.backEndVendas.service.PedidoService;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 
 @RequestMapping("/pedido")
@@ -59,6 +62,15 @@ public class PedidoResource {
         }
 
       }
+    @GetMapping("/devolucao/{idPedido}/{idProduto}/{qtdeDevolvida}")
+    public ResponseEntity<?> devolverPedido(@PathVariable int idPedido, @PathVariable int idProduto, @PathVariable int qtdeDevolvida){
+        try{
+            return ResponseEntity.ok(pServ.cancelarPedidoPeloId( idPedido,  idProduto, qtdeDevolvida ));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 
 }

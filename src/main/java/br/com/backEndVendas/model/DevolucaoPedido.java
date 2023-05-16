@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -18,10 +19,9 @@ public class DevolucaoPedido {
         @GeneratedValue(strategy = GenerationType.AUTO)
         private int id;
         private int codigoPedido;
+        private int codigoProduto;
+        private int qtdeDevolvida;
 
-        private String dataDevolucao;
-
-        private String motivoDevolucao;
-
+        private LocalDate dataDevolucao;
 
 }
