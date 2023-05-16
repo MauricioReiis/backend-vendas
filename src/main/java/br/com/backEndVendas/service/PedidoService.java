@@ -32,8 +32,6 @@ public class PedidoService {
     PedidoDao pdao;
     @Autowired
     NotaVendaDao notaVendaDao;
-    @Autowired
-    ItemPedidoDao itemPedidoDao;
 
     @Autowired
     ProdutoService produtoService;
@@ -173,12 +171,11 @@ public class PedidoService {
         Optional<Pedido> op = pdao.findById(idPedido);
 
         if (op.isPresent()) {
-            //pegar a data atual dinamicamente
-            LocalDate d = LocalDate.parse("2023-05-06");
+            LocalDate d = java.time.LocalDate.now();
             registrarDevolucao(op.get(), idProduto, qtdeDevolvida, d);
-            return "ok";
+            return "O pedido foi cancelado com sucesso!";
         } else {
-            return null;
+            return "Falha ao cancelar o pedido";
         }
     }
     public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida){
@@ -191,18 +188,12 @@ public class PedidoService {
     }
 
     public String registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
-    // revisar as função
             if (pedido != null) {
                 DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
                 pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
                 pedidoDevolvido.setCodigoProduto(idProduto);
                 pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
                 pedidoDevolvido.setDataDevolucao(dataDev);
-
-
-                //nao sei oq faz aqui    LocalDate dataDevolucao = LocalDate.parse(pedidoDevolvido.getDataDevolucao());
-                //nao sei oq faz aqui int diasExp = devolucaoJson.getQuantidadeDevolvida();
-
                 verificarPrazoDevolucao(dataDev, qtdeProduto);
 
                 boolean estoqueSuficiente = true;
@@ -238,7 +229,6 @@ public class PedidoService {
             } else {
                 throw new Exception("Pedido não encontrado.");
             }
-
     }
 
     public static boolean verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
@@ -251,5 +241,4 @@ public class PedidoService {
             throw new Exception("O prazo para devolução expirou.");
         }
     }
-
 }
