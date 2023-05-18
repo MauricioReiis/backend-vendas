@@ -1,13 +1,9 @@
 package br.com.backEndVendas.service;
 
 import br.com.backEndVendas.model.*;
-import br.com.backEndVendas.service.dao.DevolucaoDao;
-import br.com.backEndVendas.service.dao.ItemPedidoDao;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
-import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
-import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
-import br.com.backEndVendas.service.dto.CompraProdutoRetirarDto;
+import br.com.backEndVendas.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +18,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @Service
@@ -45,35 +40,43 @@ public class PedidoService {
     @Autowired
     DevolucaoPedidoService devolucaoPedidoService;
 
-    public Pedido buscarPedidoPeloId(int id) {
+    public Object  buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
         if (op.isPresent()) {
-            return op.get();
+            PedidoDto pedidoDto =PedidoDto.builder()
+                    .pedido(op.get())
+                    .build();
+            return pedidoDto;
         } else {
-            return null;
+            return PedidoStatusDto.builder()
+                    .status("Pedido inexistente!")
+                    .build();
         }
     }
-
-    public String formatarResposta(String resposta) {
-        return "{\"status\": \"" + resposta + "\"}";
-    }
-
-    public String realizarPedido(Pedido pedidoJson) throws Exception {
+    public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
         int pedidoResponse = processarPedido(pedidoJson);
+        String status;
 
         switch (pedidoResponse) {
             case 1:
-                throw new Exception("Id de produto inexistente!");
+                status = "Id de produto inexistente!";
+                break;
             case 2:
-                throw new Exception("Quantidade de produto indisponível!");
+                status = "Quantidade de produto indisponível!";
+                break;
             case 3:
-                return "Pedido Realizado com sucesso!";
+                status = "Pedido Realizado com sucesso!";
+                break;
             case 4:
-                throw new Exception("Houve um erro com o pagamento do pedido!");
-
+                status = "Houve um erro com o pagamento do pedido!";
+                break;
             default:
-                throw new Exception("Erro inesperado!");
+                status = "Erro inesperado!";
+                break;
         }
+        return PedidoStatusDto.builder()
+                .status(status)
+                .build();
     }
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
@@ -141,7 +144,7 @@ public class PedidoService {
         return 3;
     }
 
-    public String calcularFretPedido(FretPedido fretPedido) {
+    public PedidoFretDto calcularFretPedido(FretPedido fretPedido) {
         String numeroString = fretPedido.getCep();
 
         if(numeroString.length() != 8){
@@ -149,10 +152,12 @@ public class PedidoService {
         }
 
         String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume());
-        return fret;
+        return PedidoFretDto.builder()
+                .valorFret(fret)
+                .build();
     }
 
-    public String  valorMensalVendedor(int idVendedor, int ano, int mes){
+    public PedidoValorVendedorDto  valorMensalVendedor(int idVendedor, int ano, int mes){
 
         double somaValor = 0;
 
@@ -164,18 +169,24 @@ public class PedidoService {
                 }
             }
         }
-        return somaValor > 0 ? "{valorVenda: "+somaValor+"}": "Não existe venda!";
+        return PedidoValorVendedorDto.builder()
+                .valorVendas(somaValor)
+                .build();
     }
 
-    public String cancelarPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida ) throws Exception {
+    public PedidoStatusDto cancelarPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida ) throws Exception {
         Optional<Pedido> op = pdao.findById(idPedido);
 
         if (op.isPresent()) {
             LocalDate d = java.time.LocalDate.now();
             registrarDevolucao(op.get(), idProduto, qtdeDevolvida, d);
-            return "O pedido foi cancelado com sucesso!";
+            return PedidoStatusDto.builder()
+                    .status("O pedido foi cancelado com sucesso!")
+                    .build();
         } else {
-            return "Falha ao cancelar o pedido";
+            return PedidoStatusDto.builder()
+                    .status("Falha ao cancelar o pedido")
+                    .build();
         }
     }
     public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida){
@@ -210,7 +221,7 @@ public class PedidoService {
                                 item.setQuantidade(item.getQuantidade() - qtdeProduto);
                                 pedido.setStatusPedido("fechado");
                                 devolucaoPedidoService.save(pedidoDevolvido);
-                                throw new Exception("O produto foi removido com sucesso!");
+                               return "O produto foi removido com sucesso!";
                             }
                         }
                     }
@@ -219,7 +230,7 @@ public class PedidoService {
                 if (!produtoEncontrado) {
                     throw new Exception("Produto não encontrado no pedido.");
                 } else if (!estoqueSuficiente) {
-                    throw new Exception("Quantidade em estoque insuficiente.");
+                    throw new Exception("Quantidade devolvida maior do que a registrada no pedido.");
                 }
 
                 if (!atualizarEstoque(pedidoDevolvido.getCodigoProduto(), pedidoDevolvido.getQtdeDevolvida())) {

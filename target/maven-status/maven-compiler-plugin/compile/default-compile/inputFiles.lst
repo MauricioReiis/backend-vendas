@@ -1,5 +1,7 @@
+C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoStatusDto.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\ProdutoService.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\NotaVendaService.java
+C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraProdutoRetirarDto.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\PedidoService.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\model\ItemPedido.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\FretService.java
@@ -18,9 +20,11 @@ C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVenda
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\resources\NotaVendaResource.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\model\Pedido.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\model\FretPedido.java
-C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\resources\DevolucaoPedidoResource.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\EnderecoDto.java
+C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoDto.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\ItemPedidoDao.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\ItemPedidoService.java
+C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoValorVendedorDto.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\model\Produto.java
 C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraBuscarProdutoDto.java
+C:\Users\rafae\Desktop\backEnd\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoFretDto.java
