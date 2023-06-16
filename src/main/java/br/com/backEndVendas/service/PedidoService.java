@@ -5,6 +5,10 @@ import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.vonage.client.VonageClient;
+import com.vonage.client.sms.MessageStatus;
+import com.vonage.client.sms.SmsSubmissionResponse;
+import com.vonage.client.sms.messages.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -141,6 +145,8 @@ public class PedidoService {
 
         notaVendaDao.save(notaVenda);
 
+        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
+
         return 3;
     }
 
@@ -250,6 +256,26 @@ public class PedidoService {
             return true;
         } else {
             throw new Exception("O prazo para devolução expirou.");
+        }
+    }
+
+    public  void  vonageApi(int idPedido,int idCliente){
+
+        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente ;
+        ResponseEntity<ClienteStatusDto> resp = rest.getForEntity(url, ClienteStatusDto.class);
+        ClienteStatusDto c = resp.getBody();
+
+        VonageClient client = VonageClient.builder().apiKey("e25b3d26").apiSecret("QzJjoOs4Jpufk1Kq").build();
+
+        TextMessage message = new TextMessage("Compras", "+55"+c.getTelefone(),
+                "Ola "+c.getNome()+". Seu Pedido numero: "+idPedido+" foi realizado com sucesso");
+
+        SmsSubmissionResponse response = client.getSmsClient().submitMessage(message);
+
+        if (response.getMessages().get(0).getStatus() == MessageStatus.OK) {
+            System.out.println("Message sent successfully.");
+        } else {
+            System.out.println("Message failed with error: " + response.getMessages().get(0).getErrorText());
         }
     }
 }
