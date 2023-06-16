@@ -145,7 +145,7 @@ public class PedidoService {
 
         notaVendaDao.save(notaVenda);
 
-        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
+//        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
 
         return 3;
     }
