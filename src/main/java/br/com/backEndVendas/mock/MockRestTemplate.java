@@ -1,10 +1,9 @@
 package br.com.backEndVendas.mock;
 
-<<<<<<< HEAD
+
 import br.com.backEndVendas.service.dto.ClienteCadastroDto;
-=======
+
 import br.com.backEndVendas.service.dto.ClienteStatusDto;
->>>>>>> b951b0af08b64423d699f0cd79f5fac0467c6261
 import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
 import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
 import br.com.backEndVendas.service.dto.CompraProdutoDto;
