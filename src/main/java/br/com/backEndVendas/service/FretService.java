@@ -1,13 +1,20 @@
 package br.com.backEndVendas.service;
 
 import br.com.backEndVendas.service.dto.EnderecoDto;
+import br.com.backEndVendas.service.dto.FretPedidoDescontoDto;
+import br.com.backEndVendas.service.dto.PedidoStatusDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class FretService {
+
+    @Qualifier("mock")
+    @Autowired
+    RestTemplate rest;
 
     @Autowired
     RestTemplate restTemplate;
@@ -20,15 +27,25 @@ public class FretService {
         return e;
     }
 
-    public String calcularFret(String cep, int qtdeVolume) {
+    public double aplicarCupomFrete(int idCliente) {
+        String url = "https://localhost:8080/crm/validar/cupom/desconto/" + idCliente;
+        ResponseEntity<FretPedidoDescontoDto> resp = rest.getForEntity(url, FretPedidoDescontoDto.class);
+        FretPedidoDescontoDto c = resp.getBody();
+        double result = c.getValorDesconto();
+        return result;
+    }
+
+    public String calcularFret(String cep, int qtdeVolume, int idCliente) {
         EnderecoDto uf = buscarCep(cep);
         int preco = obterPrecoEstado(uf.getUf());
-        int preçoFret = preco * qtdeVolume;
-        String message = "Estado: "+ uf.getUf()+ ", Cidade: "+uf.getLocalidade() + ", Preço fret: "+preçoFret+"";
+        double desconto = aplicarCupomFrete(idCliente);
+        double precoFret = (preco * qtdeVolume) - (idCliente==0?0: desconto);
+        String message = "Estado: "+ uf.getUf()+ ", Cidade: "+uf.getLocalidade() + ", Preço fret: "+precoFret+"";
 
         return message;
 
     }
+
 
     public static int obterPrecoEstado(String sigla) {
         int numero;

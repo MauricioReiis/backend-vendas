@@ -1,12 +1,8 @@
 package br.com.backEndVendas.mock;
 
 
-import br.com.backEndVendas.service.dto.ClienteCadastroDto;
+import br.com.backEndVendas.service.dto.*;
 
-import br.com.backEndVendas.service.dto.ClienteStatusDto;
-import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
-import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
-import br.com.backEndVendas.service.dto.CompraProdutoDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -104,7 +100,20 @@ public class MockRestTemplate extends RestTemplate {
                         .build()
         );
 
+        comandos.put("https://localhost:8080/crm/validar/cupom/desconto/1",
+                FretPedidoDescontoDto.builder()
+                        .valorDesconto(10.0)
+                        .build()
+        );
+
+        comandos.put("https://localhost:8080/crm/validar/cupom/desconto/2",
+                FretPedidoDescontoDto.builder()
+                        .valorDesconto(50.0)
+                        .build()
+        );
+
     }
+
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> reponseType, Object ...uriVariables){
 
         return  new ResponseEntity<T>((T) comandos.get(url), HttpStatus.OK);
