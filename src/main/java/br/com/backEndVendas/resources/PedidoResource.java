@@ -72,7 +72,7 @@ public class PedidoResource {
     @GetMapping("/devolucao/{idPedido}/{idProduto}/{qtdeDevolvida}")
     public ResponseEntity<?> devolverPedido(@PathVariable int idPedido, @PathVariable int idProduto, @PathVariable int qtdeDevolvida){
         try{
-            return ResponseEntity.ok(pServ.cancelarPedidoPeloId( idPedido,  idProduto, qtdeDevolvida ));
+            return ResponseEntity.ok(pServ.devolverPedidoPeloId( idPedido,  idProduto, qtdeDevolvida ));
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

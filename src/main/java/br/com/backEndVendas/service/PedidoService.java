@@ -4,7 +4,6 @@ import br.com.backEndVendas.model.*;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dto.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vonage.client.VonageClient;
 import com.vonage.client.sms.MessageStatus;
 import com.vonage.client.sms.SmsSubmissionResponse;
@@ -44,10 +43,16 @@ public class PedidoService {
     @Autowired
     DevolucaoPedidoService devolucaoPedidoService;
 
-    public Object  buscarPedidoPeloId(int id) {
+    private final RestTemplate restTemplate;
+
+    public PedidoService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public Object buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
         if (op.isPresent()) {
-            PedidoDto pedidoDto =PedidoDto.builder()
+            PedidoDto pedidoDto = PedidoDto.builder()
                     .pedido(op.get())
                     .build();
             return pedidoDto;
@@ -57,13 +62,14 @@ public class PedidoService {
                     .build();
         }
     }
+
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
         String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
                 .status(pedidoResponse)
                 .build();
 
-   }
+    }
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
@@ -76,7 +82,7 @@ public class PedidoService {
 
     public String processarPedido(Pedido pedidoJson) throws Exception {
         if (!validarCarrinho(pedidoJson.getIdCarrinho(), pedidoJson.getIdCliente())) {
-            return  "Houve um erro com o pagamento do pedido!";
+            return "Houve um erro com o pagamento do pedido!";
         }
 
         Pedido pedido = new Pedido();
@@ -129,9 +135,9 @@ public class PedidoService {
         ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
         ClienteCadastroDto d = resp.getBody();
         assert d != null;
-        if (d.isCadastro()){
-            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5/100));
-        }else{
+        if (d.isCadastro()) {
+            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5 / 100));
+        } else {
             notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
         }
 
@@ -145,7 +151,7 @@ public class PedidoService {
     public PedidoFretDto calcularFretPedido(FretPedido fretPedido) {
         String numeroString = fretPedido.getCep();
 
-        if(numeroString.length() != 8){
+        if (numeroString.length() != 8) {
             throw new EntityNotFoundException("Formato de cep inválido!");
         }
 
@@ -155,14 +161,14 @@ public class PedidoService {
                 .build();
     }
 
-    public PedidoValorVendedorDto  valorMensalVendedor(int idVendedor, int ano, int mes){
+    public PedidoValorVendedorDto valorMensalVendedor(int idVendedor, int ano, int mes) {
 
         double somaValor = 0;
 
         List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
-        for(Pedido p : listaPedidos){
-            if(p.getDataPedido().getYear()==ano){
-                if(p.getDataPedido().getMonthValue()==mes){
+        for (Pedido p : listaPedidos) {
+            if (p.getDataPedido().getYear() == ano) {
+                if (p.getDataPedido().getMonthValue() == mes) {
                     somaValor += p.getPrecoTotal();
                 }
             }
@@ -172,73 +178,71 @@ public class PedidoService {
                 .build();
     }
 
-    public PedidoStatusDto cancelarPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida ) throws Exception {
-        Optional<Pedido> op = pdao.findById(idPedido);
-
-        if (op.isPresent()) {
-            LocalDate d = java.time.LocalDate.now();
-            registrarDevolucao(op.get(), idProduto, qtdeDevolvida, d);
-            return PedidoStatusDto.builder()
-                    .status("O pedido foi cancelado com sucesso!")
-                    .build();
-        } else {
-            return PedidoStatusDto.builder()
-                    .status("Falha ao cancelar o pedido")
-                    .build();
-        }
-    }
-    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida){
-
-        String url = "https://localhost:8080/compras/produto/devolver/" + cdProduto + "/" + qtdeDevolvida;
-        ResponseEntity<CompraProdutoRetirarDto> resp = rest.getForEntity(url, CompraProdutoRetirarDto.class);
-        CompraProdutoRetirarDto c = resp.getBody();
-
-        return c.isStatus();
-    }
-
     public String registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
-            if (pedido != null) {
-                DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
-                pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
-                pedidoDevolvido.setCodigoProduto(idProduto);
-                pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
-                pedidoDevolvido.setDataDevolucao(dataDev);
-                verificarPrazoDevolucao(dataDev, qtdeProduto);
+        if (pedido != null) {
+            DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
+            pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
+            pedidoDevolvido.setCodigoProduto(idProduto);
+            pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
+            pedidoDevolvido.setDataDevolucao(dataDev);
+            verificarPrazoDevolucao(dataDev, qtdeProduto);
 
-                boolean estoqueSuficiente = true;
-                boolean produtoEncontrado = false;
+            boolean estoqueSuficiente = true;
+            boolean produtoEncontrado = false;
 
-                if (!pedido.getItensPedido().isEmpty()) {
-                    for (ItemPedido item : pedido.getItensPedido()) {
-                        if (item.getIdProduto() != 0 && item.getIdProduto() == idProduto) {
-                            produtoEncontrado = true;
-                            if (item.getQuantidade() < qtdeProduto) {
-                                estoqueSuficiente = false;
-                                break;
-                            } else {
-                                item.setQuantidade(item.getQuantidade() - qtdeProduto);
-                                pedido.setStatusPedido("fechado");
-                                devolucaoPedidoService.save(pedidoDevolvido);
-                               return "O produto foi removido com sucesso!";
-                            }
+            if (!pedido.getItensPedido().isEmpty()) {
+                for (ItemPedido item : pedido.getItensPedido()) {
+                    if (item.getIdProduto() != 0 && item.getIdProduto() == idProduto) {
+                        produtoEncontrado = true;
+                        if (item.getQuantidade() < qtdeProduto) {
+                            estoqueSuficiente = false;
+                            break;
+                        } else {
+                            item.setQuantidade(item.getQuantidade() - qtdeProduto);
+                            pedido.setStatusPedido("fechado");
+                            devolucaoPedidoService.save(pedidoDevolvido);
+                            return "O produto foi removido com sucesso!";
                         }
                     }
                 }
-
-                if (!produtoEncontrado) {
-                    throw new Exception("Produto não encontrado no pedido.");
-                } else if (!estoqueSuficiente) {
-                    throw new Exception("Quantidade devolvida maior do que a registrada no pedido.");
-                }
-
-                if (!atualizarEstoque(pedidoDevolvido.getCodigoProduto(), pedidoDevolvido.getQtdeDevolvida())) {
-                    throw new Exception("Não foi possível devolver o produto.");
-                }
-                return "Pedido devolvido";
-            } else {
-                throw new Exception("Pedido não encontrado.");
             }
+
+            if (!produtoEncontrado) {
+                throw new Exception("Produto não encontrado no pedido.");
+            } else if (!estoqueSuficiente) {
+                throw new Exception("Quantidade devolvida maior do que a registrada no pedido.");
+            }
+
+            if (!verificarEstoque(idProduto, qtdeProduto)) {
+                throw new Exception("Quantidade indisponível em estoque.");
+            }
+
+            if (!atualizarEstoque(idProduto, qtdeProduto)) {
+                throw new Exception("Não foi possível atualizar o estoque.");
+            }
+
+            return "Pedido devolvido";
+        } else {
+            throw new Exception("Pedido não encontrado.");
+        }
     }
+
+    public boolean verificarEstoque(int idProduto, int qtdeProduto) {
+        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
+        ResponseEntity<EstoqueResponseDto> resp = restTemplate.getForEntity(url, EstoqueResponseDto.class);
+        EstoqueResponseDto estoqueResponse = resp.getBody();
+
+        return estoqueResponse != null && estoqueResponse.isStatus() && estoqueResponse.getQuantidade() >= qtdeProduto;
+    }
+
+    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
+        String url = "https://compra-sgeu.up.railway.app/estoque/debitar/" + cdProduto + "/" + qtdeDevolvida;
+        ResponseEntity<CompraProdutoRetirarDto> resp = restTemplate.getForEntity(url, CompraProdutoRetirarDto.class);
+        CompraProdutoRetirarDto c = resp.getBody();
+
+        return c != null && c.isStatus();
+    }
+
 
     public static boolean verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
         LocalDate dataAtual = LocalDate.now();
@@ -250,17 +254,32 @@ public class PedidoService {
             throw new Exception("O prazo para devolução expirou.");
         }
     }
+    public PedidoStatusDto devolverPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
+        Optional<Pedido> op = pdao.findById(idPedido);
 
-    public  void  vonageApi(int idPedido,int idCliente){
+        if (op.isPresent()) {
+            LocalDate d = java.time.LocalDate.now();
+            registrarDevolucao(op.get(), idProduto, qtdeDevolvida, d);
+            return PedidoStatusDto.builder()
+                    .status("O pedido foi devolvido com sucesso!")
+                    .build();
+        } else {
+            return PedidoStatusDto.builder()
+                    .status("Falha ao devolvido o pedido")
+                    .build();
+        }
+    }
 
-        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente ;
+    public void vonageApi(int idPedido, int idCliente) {
+
+        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente;
         ResponseEntity<ClienteStatusDto> resp = rest.getForEntity(url, ClienteStatusDto.class);
         ClienteStatusDto c = resp.getBody();
 
         VonageClient client = VonageClient.builder().apiKey("e25b3d26").apiSecret("QzJjoOs4Jpufk1Kq").build();
 
-        TextMessage message = new TextMessage("Compras", "+55"+c.getTelefone(),
-                "Ola "+c.getNome()+". Seu Pedido numero: "+idPedido+" foi realizado com sucesso");
+        TextMessage message = new TextMessage("Compras", "+55" + c.getTelefone(),
+                "Ola " + c.getNome() + ". Seu Pedido numero: " + idPedido + " foi realizado com sucesso");
 
         SmsSubmissionResponse response = client.getSmsClient().submitMessage(message);
 
