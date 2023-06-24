@@ -124,8 +124,16 @@ public class PedidoService {
         notaVenda.setPedido(pedido);
         notaVenda.setIdCliente(pedidoJson.getIdCliente());
         notaVenda.setIdVendedor(pedidoJson.getIdVendedor());
-        notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
         notaVenda.setDataEmissao(LocalDate.now());
+        String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
+        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
+        ClienteCadastroDto d = resp.getBody();
+        assert d != null;
+        if (d.isCadastro()){
+            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5/100));
+        }else{
+            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
+        }
 
         notaVendaDao.save(notaVenda);
 
