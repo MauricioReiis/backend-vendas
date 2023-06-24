@@ -58,30 +58,12 @@ public class PedidoService {
         }
     }
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
-        int pedidoResponse = processarPedido(pedidoJson);
-        String status;
-
-        switch (pedidoResponse) {
-            case 1:
-                status = "Id de produto inexistente!";
-                break;
-            case 2:
-                status = "Quantidade de produto indisponível!";
-                break;
-            case 3:
-                status = "Pedido Realizado com sucesso!";
-                break;
-            case 4:
-                status = "Houve um erro com o pagamento do pedido!";
-                break;
-            default:
-                status = "Erro inesperado!";
-                break;
-        }
+        String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
-                .status(status)
+                .status(pedidoResponse)
                 .build();
-    }
+
+   }
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
@@ -92,9 +74,9 @@ public class PedidoService {
     }
 
 
-    public int processarPedido(Pedido pedidoJson) throws JsonProcessingException {
+    public String processarPedido(Pedido pedidoJson) throws Exception {
         if (!validarCarrinho(pedidoJson.getIdCarrinho(), pedidoJson.getIdCliente())) {
-            return 4;
+            return  "Houve um erro com o pagamento do pedido!";
         }
 
         Pedido pedido = new Pedido();
@@ -107,17 +89,18 @@ public class PedidoService {
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         for (ItemPedido itemJson : pedidoJson.getItensPedido()) {
+
             CompraBuscarProdutoDto p = produtoService.produtoPeloId(itemJson.getIdProduto());
             if (p == null) {
-                return 1;
+                return "Id de produto inexistente!";
             }
 
             int validarEstoque = produtoService.verificarEstoqueDisponível(itemJson.getIdProduto(), itemJson.getQuantidade());
 
             if (validarEstoque == 1) {
-                return 1;
+                return "Id de produto inexistente!";
             } else if (validarEstoque == 3) {
-                return 2;
+                throw new Exception("Quantidade de produto indisponível!");
             }
 
             ItemPedido itemPedido = new ItemPedido();
@@ -125,6 +108,7 @@ public class PedidoService {
             itemPedido.setIdProduto(itemJson.getIdProduto());
             itemPedido.setQuantidade(itemJson.getQuantidade());
             itensPedido.add(itemPedido);
+
         }
 
         pedido.setItensPedido(itensPedido);
@@ -147,7 +131,7 @@ public class PedidoService {
 
 //        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
 
-        return 3;
+        return "Pedido Realizado com sucesso!";
     }
 
     public PedidoFretDto calcularFretPedido(FretPedido fretPedido) {
