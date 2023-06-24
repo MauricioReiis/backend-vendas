@@ -65,11 +65,7 @@ public class PedidoService {
 
    }
 
-    public void aplicarDesconto(int idCliente, double precoTotal) {
-        String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + precoTotal;
-        ResponseEntity<PedidoStatusDto> resp = rest.getForEntity(url, PedidoStatusDto.class);
-        PedidoStatusDto c = resp.getBody();
-    }
+
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
@@ -92,8 +88,6 @@ public class PedidoService {
         pedido.setDataPedido(pedidoJson.getDataPedido());
         pedido.setIdCarrinho(pedidoJson.getIdCarrinho());
         pedido.setStatusPedido(pedidoJson.getStatusPedido());
-
-        aplicarDesconto(pedidoJson.getIdCliente(), pedidoJson.getPrecoTotal());
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         for (ItemPedido itemJson : pedidoJson.getItensPedido()) {
@@ -157,7 +151,7 @@ public class PedidoService {
             throw new EntityNotFoundException("Formato de cep inválido!");
         }
 
-        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume());
+        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume(), fretPedido.getIdCliente());
         return PedidoFretDto.builder()
                 .valorFret(fret)
                 .build();
