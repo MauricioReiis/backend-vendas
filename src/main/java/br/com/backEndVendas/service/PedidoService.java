@@ -44,10 +44,10 @@ public class PedidoService {
     @Autowired
     DevolucaoPedidoService devolucaoPedidoService;
 
-    public Object  buscarPedidoPeloId(int id) {
+    public Object buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
         if (op.isPresent()) {
-            PedidoDto pedidoDto =PedidoDto.builder()
+            PedidoDto pedidoDto = PedidoDto.builder()
                     .pedido(op.get())
                     .build();
             return pedidoDto;
@@ -57,13 +57,14 @@ public class PedidoService {
                     .build();
         }
     }
+
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
         String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
                 .status(pedidoResponse)
                 .build();
 
-   }
+    }
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
@@ -76,7 +77,7 @@ public class PedidoService {
 
     public String processarPedido(Pedido pedidoJson) throws Exception {
         if (!validarCarrinho(pedidoJson.getIdCarrinho(), pedidoJson.getIdCliente())) {
-            return  "Houve um erro com o pagamento do pedido!";
+            return "Houve um erro com o pagamento do pedido!";
         }
 
         Pedido pedido = new Pedido();
@@ -129,9 +130,9 @@ public class PedidoService {
         ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
         ClienteCadastroDto d = resp.getBody();
         assert d != null;
-        if (d.isCadastro()){
-            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5/100));
-        }else{
+        if (d.isCadastro()) {
+            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5 / 100));
+        } else {
             notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
         }
 
@@ -145,7 +146,7 @@ public class PedidoService {
     public PedidoFretDto calcularFretPedido(FretPedido fretPedido) {
         String numeroString = fretPedido.getCep();
 
-        if(numeroString.length() != 8){
+        if (numeroString.length() != 8) {
             throw new EntityNotFoundException("Formato de cep inválido!");
         }
 
@@ -155,14 +156,14 @@ public class PedidoService {
                 .build();
     }
 
-    public PedidoValorVendedorDto  valorMensalVendedor(int idVendedor, int ano, int mes){
+    public PedidoValorVendedorDto valorMensalVendedor(int idVendedor, int ano, int mes) {
 
         double somaValor = 0;
 
         List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
-        for(Pedido p : listaPedidos){
-            if(p.getDataPedido().getYear()==ano){
-                if(p.getDataPedido().getMonthValue()==mes){
+        for (Pedido p : listaPedidos) {
+            if (p.getDataPedido().getYear() == ano) {
+                if (p.getDataPedido().getMonthValue() == mes) {
                     somaValor += p.getPrecoTotal();
                 }
             }
@@ -172,7 +173,7 @@ public class PedidoService {
                 .build();
     }
 
-    public PedidoStatusDto cancelarPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida ) throws Exception {
+    public PedidoStatusDto cancelarPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
         Optional<Pedido> op = pdao.findById(idPedido);
 
         if (op.isPresent()) {
@@ -187,7 +188,8 @@ public class PedidoService {
                     .build();
         }
     }
-    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida){
+
+    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
 
         String url = "https://localhost:8080/compras/produto/devolver/" + cdProduto + "/" + qtdeDevolvida;
         ResponseEntity<CompraProdutoRetirarDto> resp = rest.getForEntity(url, CompraProdutoRetirarDto.class);
@@ -197,47 +199,47 @@ public class PedidoService {
     }
 
     public String registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
-            if (pedido != null) {
-                DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
-                pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
-                pedidoDevolvido.setCodigoProduto(idProduto);
-                pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
-                pedidoDevolvido.setDataDevolucao(dataDev);
-                verificarPrazoDevolucao(dataDev, qtdeProduto);
+        if (pedido != null) {
+            DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
+            pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
+            pedidoDevolvido.setCodigoProduto(idProduto);
+            pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
+            pedidoDevolvido.setDataDevolucao(dataDev);
+            verificarPrazoDevolucao(dataDev, qtdeProduto);
 
-                boolean estoqueSuficiente = true;
-                boolean produtoEncontrado = false;
+            boolean estoqueSuficiente = true;
+            boolean produtoEncontrado = false;
 
-                if (!pedido.getItensPedido().isEmpty()) {
-                    for (ItemPedido item : pedido.getItensPedido()) {
-                        if (item.getIdProduto() != 0 && item.getIdProduto() == idProduto) {
-                            produtoEncontrado = true;
-                            if (item.getQuantidade() < qtdeProduto) {
-                                estoqueSuficiente = false;
-                                break;
-                            } else {
-                                item.setQuantidade(item.getQuantidade() - qtdeProduto);
-                                pedido.setStatusPedido("fechado");
-                                devolucaoPedidoService.save(pedidoDevolvido);
-                               return "O produto foi removido com sucesso!";
-                            }
+            if (!pedido.getItensPedido().isEmpty()) {
+                for (ItemPedido item : pedido.getItensPedido()) {
+                    if (item.getIdProduto() != 0 && item.getIdProduto() == idProduto) {
+                        produtoEncontrado = true;
+                        if (item.getQuantidade() < qtdeProduto) {
+                            estoqueSuficiente = false;
+                            break;
+                        } else {
+                            item.setQuantidade(item.getQuantidade() - qtdeProduto);
+                            pedido.setStatusPedido("fechado");
+                            devolucaoPedidoService.save(pedidoDevolvido);
+                            return "O produto foi removido com sucesso!";
                         }
                     }
                 }
-
-                if (!produtoEncontrado) {
-                    throw new Exception("Produto não encontrado no pedido.");
-                } else if (!estoqueSuficiente) {
-                    throw new Exception("Quantidade devolvida maior do que a registrada no pedido.");
-                }
-
-                if (!atualizarEstoque(pedidoDevolvido.getCodigoProduto(), pedidoDevolvido.getQtdeDevolvida())) {
-                    throw new Exception("Não foi possível devolver o produto.");
-                }
-                return "Pedido devolvido";
-            } else {
-                throw new Exception("Pedido não encontrado.");
             }
+
+            if (!produtoEncontrado) {
+                throw new Exception("Produto não encontrado no pedido.");
+            } else if (!estoqueSuficiente) {
+                throw new Exception("Quantidade devolvida maior do que a registrada no pedido.");
+            }
+
+            if (!atualizarEstoque(pedidoDevolvido.getCodigoProduto(), pedidoDevolvido.getQtdeDevolvida())) {
+                throw new Exception("Não foi possível devolver o produto.");
+            }
+            return "Pedido devolvido";
+        } else {
+            throw new Exception("Pedido não encontrado.");
+        }
     }
 
     public static boolean verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
@@ -251,16 +253,16 @@ public class PedidoService {
         }
     }
 
-    public  void  vonageApi(int idPedido,int idCliente){
+    public void vonageApi(int idPedido, int idCliente) {
 
-        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente ;
+        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente;
         ResponseEntity<ClienteStatusDto> resp = rest.getForEntity(url, ClienteStatusDto.class);
         ClienteStatusDto c = resp.getBody();
 
         VonageClient client = VonageClient.builder().apiKey("e25b3d26").apiSecret("QzJjoOs4Jpufk1Kq").build();
 
-        TextMessage message = new TextMessage("Compras", "+55"+c.getTelefone(),
-                "Ola "+c.getNome()+". Seu Pedido numero: "+idPedido+" foi realizado com sucesso");
+        TextMessage message = new TextMessage("Compras", "+55" + c.getTelefone(),
+                "Ola " + c.getNome() + ". Seu Pedido numero: " + idPedido + " foi realizado com sucesso");
 
         SmsSubmissionResponse response = client.getSmsClient().submitMessage(message);
 
@@ -269,5 +271,19 @@ public class PedidoService {
         } else {
             System.out.println("Message failed with error: " + response.getMessages().get(0).getErrorText());
         }
+    }
+
+    public PedidoValorVendedorDto valorAnualVendedor(int idVendedor, int ano) {
+        double somaValor = 0;
+
+        List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
+        for (Pedido p : listaPedidos) {
+            if (p.getDataPedido().getYear() == ano) {
+                somaValor += p.getPrecoTotal();
+            }
+        }
+        return PedidoValorVendedorDto.builder()
+                .valorVendas(somaValor)
+                .build();
     }
 }
