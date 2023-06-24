@@ -5,6 +5,10 @@ import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.vonage.client.VonageClient;
+import com.vonage.client.sms.MessageStatus;
+import com.vonage.client.sms.SmsSubmissionResponse;
+import com.vonage.client.sms.messages.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -54,30 +58,12 @@ public class PedidoService {
         }
     }
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
-        int pedidoResponse = processarPedido(pedidoJson);
-        String status;
-
-        switch (pedidoResponse) {
-            case 1:
-                status = "Id de produto inexistente!";
-                break;
-            case 2:
-                status = "Quantidade de produto indisponível!";
-                break;
-            case 3:
-                status = "Pedido Realizado com sucesso!";
-                break;
-            case 4:
-                status = "Houve um erro com o pagamento do pedido!";
-                break;
-            default:
-                status = "Erro inesperado!";
-                break;
-        }
+        String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
-                .status(status)
+                .status(pedidoResponse)
                 .build();
-    }
+
+   }
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
@@ -88,9 +74,9 @@ public class PedidoService {
     }
 
 
-    public int processarPedido(Pedido pedidoJson) throws JsonProcessingException {
+    public String processarPedido(Pedido pedidoJson) throws Exception {
         if (!validarCarrinho(pedidoJson.getIdCarrinho(), pedidoJson.getIdCliente())) {
-            return 4;
+            return  "Houve um erro com o pagamento do pedido!";
         }
 
         Pedido pedido = new Pedido();
@@ -103,17 +89,18 @@ public class PedidoService {
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         for (ItemPedido itemJson : pedidoJson.getItensPedido()) {
+
             CompraBuscarProdutoDto p = produtoService.produtoPeloId(itemJson.getIdProduto());
             if (p == null) {
-                return 1;
+                return "Id de produto inexistente!";
             }
 
             int validarEstoque = produtoService.verificarEstoqueDisponível(itemJson.getIdProduto(), itemJson.getQuantidade());
 
             if (validarEstoque == 1) {
-                return 1;
+                return "Id de produto inexistente!";
             } else if (validarEstoque == 3) {
-                return 2;
+                throw new Exception("Quantidade de produto indisponível!");
             }
 
             ItemPedido itemPedido = new ItemPedido();
@@ -121,6 +108,7 @@ public class PedidoService {
             itemPedido.setIdProduto(itemJson.getIdProduto());
             itemPedido.setQuantidade(itemJson.getQuantidade());
             itensPedido.add(itemPedido);
+
         }
 
         pedido.setItensPedido(itensPedido);
@@ -141,7 +129,9 @@ public class PedidoService {
 
         notaVendaDao.save(notaVenda);
 
-        return 3;
+//        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
+
+        return "Pedido Realizado com sucesso!";
     }
 
     public PedidoFretDto calcularFretPedido(FretPedido fretPedido) {
@@ -250,6 +240,26 @@ public class PedidoService {
             return true;
         } else {
             throw new Exception("O prazo para devolução expirou.");
+        }
+    }
+
+    public  void  vonageApi(int idPedido,int idCliente){
+
+        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente ;
+        ResponseEntity<ClienteStatusDto> resp = rest.getForEntity(url, ClienteStatusDto.class);
+        ClienteStatusDto c = resp.getBody();
+
+        VonageClient client = VonageClient.builder().apiKey("e25b3d26").apiSecret("QzJjoOs4Jpufk1Kq").build();
+
+        TextMessage message = new TextMessage("Compras", "+55"+c.getTelefone(),
+                "Ola "+c.getNome()+". Seu Pedido numero: "+idPedido+" foi realizado com sucesso");
+
+        SmsSubmissionResponse response = client.getSmsClient().submitMessage(message);
+
+        if (response.getMessages().get(0).getStatus() == MessageStatus.OK) {
+            System.out.println("Message sent successfully.");
+        } else {
+            System.out.println("Message failed with error: " + response.getMessages().get(0).getErrorText());
         }
     }
 }

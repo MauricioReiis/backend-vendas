@@ -1,5 +1,6 @@
 package br.com.backEndVendas.mock;
 
+import br.com.backEndVendas.service.dto.ClienteStatusDto;
 import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
 import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
 import br.com.backEndVendas.service.dto.CompraProdutoDto;
@@ -79,6 +80,12 @@ public class MockRestTemplate extends RestTemplate {
                         .idProduto(3)
                         .qtdEstoque(20)
                         .precoUnit(500)
+                        .build()
+        );
+        comandos.put("https://localhost:8080/crm/buscar/cliente/1",
+                ClienteStatusDto.builder()
+                        .nome("Rafael")
+                        .telefone("32988983168")
                         .build()
         );
 
