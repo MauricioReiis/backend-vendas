@@ -43,11 +43,8 @@ public class PedidoService {
     @Autowired
     DevolucaoPedidoService devolucaoPedidoService;
 
-    private final RestTemplate restTemplate;
-
-    public PedidoService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    @Autowired
+    RestTemplate restTemplate;
 
     public Object buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
@@ -63,12 +60,17 @@ public class PedidoService {
         }
     }
 
-    public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
-        String pedidoResponse = (processarPedido(pedidoJson));
-        return PedidoStatusDto.builder()
-                .status(pedidoResponse)
-                .build();
+    public PedidoStatusDto realizarPedido(Pedido pedidoJson, int clienteId, int carrinhoId, double valorTotal, String formaPagamento) throws Exception {
+        boolean pgOK = realizarPagamento(clienteId, carrinhoId, valorTotal, formaPagamento);
 
+        if (pgOK) {
+            String pedidoResponse = processarPedido(pedidoJson);
+            return PedidoStatusDto.builder()
+                    .status(pedidoResponse)
+                    .build();
+        } else {
+            throw new Exception("O pagamento não foi bem-sucedido. Por favor, tente novamente.");
+        }
     }
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
@@ -208,17 +210,21 @@ public class PedidoService {
             }
 
             if (!produtoEncontrado) {
-                throw new Exception("Produto não encontrado no pedido.");
+                throw new Exception("Produto não encontrado no pedido!");
             } else if (!estoqueSuficiente) {
-                throw new Exception("Quantidade devolvida maior do que a registrada no pedido.");
+                throw new Exception("Quantidade devolvida maior do que a registrada no pedido!");
             }
 
             if (!verificarEstoque(idProduto, qtdeProduto)) {
-                throw new Exception("Quantidade indisponível em estoque.");
+                throw new Exception("Quantidade indisponível em estoque!");
+            }
+
+            if (!produtoService.validarProdutoExistente(idProduto)) {
+                throw new Exception("Produto informado não existe!");
             }
 
             if (!atualizarEstoque(idProduto, qtdeProduto)) {
-                throw new Exception("Não foi possível atualizar o estoque.");
+                throw new Exception("Não foi possível atualizar o estoque!");
             }
 
             return "Pedido devolvido";
@@ -243,7 +249,6 @@ public class PedidoService {
         return c != null && c.isStatus();
     }
 
-
     public static boolean verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
         LocalDate dataAtual = LocalDate.now();
         long diferencaDias = (ChronoUnit.DAYS.between(dataDevolucao, dataAtual) * -1);
@@ -254,6 +259,7 @@ public class PedidoService {
             throw new Exception("O prazo para devolução expirou.");
         }
     }
+
     public PedidoStatusDto devolverPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
         Optional<Pedido> op = pdao.findById(idPedido);
 

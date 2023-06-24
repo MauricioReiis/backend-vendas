@@ -104,6 +104,18 @@ public class MockRestTemplate extends RestTemplate {
                         .build()
         );
 
+        comandos.put("https://localhost:8080/pagamento/carrinho/1",
+                ClienteCadastroDto.builder()
+                        .cadastro(false)
+                        .build()
+        );
+
+        comandos.put("https://localhost:8080/pagamento/carrinho/2",
+                ClienteCadastroDto.builder()
+                        .cadastro(true)
+                        .build()
+        );
+
     }
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> reponseType, Object ...uriVariables){
 
