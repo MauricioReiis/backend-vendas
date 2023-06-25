@@ -75,6 +75,14 @@ public class PedidoResource {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    @GetMapping("/calcular/vendedor/anual/{idVendedor}/{ano}")
+    public ResponseEntity<?> getValorAnualVendedor(@PathVariable int idVendedor, @PathVariable int ano) {
+        try {
+            return ResponseEntity.ok(pServ.valorAnualVendedor(idVendedor, ano));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 
 }
