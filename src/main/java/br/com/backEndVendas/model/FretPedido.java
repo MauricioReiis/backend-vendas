@@ -10,4 +10,7 @@ import lombok.NoArgsConstructor;
 public class FretPedido {
     String cep;
     int qtdeVolume;
+
+    int idCliente;
+
 }

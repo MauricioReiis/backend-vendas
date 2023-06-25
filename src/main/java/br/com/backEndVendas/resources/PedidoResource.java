@@ -10,9 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
-
 @RequestMapping("/pedido")
 @RestController
 public class PedidoResource {
@@ -72,6 +69,14 @@ public class PedidoResource {
     public ResponseEntity<?> devolverPedido(@PathVariable int idPedido, @PathVariable int idProduto, @PathVariable int qtdeDevolvida) {
         try {
             return ResponseEntity.ok(pServ.devolverPedidoPeloId(idPedido, idProduto, qtdeDevolvida));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+    @GetMapping("/calcular/vendedor/anual/{idVendedor}/{ano}")
+    public ResponseEntity<?> getValorAnualVendedor(@PathVariable int idVendedor, @PathVariable int ano) {
+        try {
+            return ResponseEntity.ok(pServ.valorAnualVendedor(idVendedor, ano));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }

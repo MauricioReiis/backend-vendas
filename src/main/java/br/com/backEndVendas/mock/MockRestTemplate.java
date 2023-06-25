@@ -100,7 +100,6 @@ public class MockRestTemplate extends RestTemplate {
                         .build()
         );
 
-
         comandos.put("https://localhost:8080/modulo-de-pagamentos/carrinho",
                 PagamentosCarrinhoDto.builder()
                         .clientId(1)
@@ -110,7 +109,20 @@ public class MockRestTemplate extends RestTemplate {
                         .build()
         );
 
+        comandos.put("https://localhost:8080/crm/validar/cupom/desconto/1",
+                FretPedidoDescontoDto.builder()
+                        .valorDesconto(10.0)
+                        .build()
+        );
+
+        comandos.put("https://localhost:8080/crm/validar/cupom/desconto/2",
+                FretPedidoDescontoDto.builder()
+                        .valorDesconto(50.0)
+                        .build()
+        );
+
     }
+
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> reponseType, Object ...uriVariables){
 
         return  new ResponseEntity<T>((T) comandos.get(url), HttpStatus.OK);

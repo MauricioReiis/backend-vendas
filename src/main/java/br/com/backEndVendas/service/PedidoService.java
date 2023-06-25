@@ -43,8 +43,6 @@ public class PedidoService {
     @Autowired
     DevolucaoPedidoService devolucaoPedidoService;
 
-    @Autowired
-    RestTemplate restTemplate;
 
     public Object buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
@@ -59,21 +57,26 @@ public class PedidoService {
                     .build();
         }
     }
-    public String realizarPagamento(){
+
+    public String realizarPagamento() {
 
         String url = "https://localhost:8080/modulo-de-pagamentos/carrinho";
-        ResponseEntity<PagamentosCarrinhoDto> resp = restTemplate.getForEntity(url, PagamentosCarrinhoDto.class);
+        ResponseEntity<PagamentosCarrinhoDto> resp = rest.getForEntity(url, PagamentosCarrinhoDto.class);
         PagamentosCarrinhoDto c = resp.getBody();
 
         return "Pagamento Aprovado";
     }
+
 
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
         String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
                 .status(pedidoResponse)
                 .build();
+
+
     }
+
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
@@ -135,6 +138,7 @@ public class PedidoService {
         notaVenda.setIdCliente(pedidoJson.getIdCliente());
         notaVenda.setIdVendedor(pedidoJson.getIdVendedor());
         notaVenda.setDataEmissao(LocalDate.now());
+
         String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
         ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
         ClienteCadastroDto d = resp.getBody();
@@ -144,6 +148,17 @@ public class PedidoService {
         } else {
             notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
         }
+
+//        String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
+//        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
+//        ClienteCadastroDto d = resp.getBody();
+//        assert d != null;
+//        if (d.isCadastro()){
+//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5/100));
+//        }else{
+//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
+//        }
+
 
         notaVendaDao.save(notaVenda);
 
@@ -159,7 +174,7 @@ public class PedidoService {
             throw new EntityNotFoundException("Formato de cep inválido!");
         }
 
-        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume());
+        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume(), fretPedido.getIdCliente());
         return PedidoFretDto.builder()
                 .valorFret(fret)
                 .build();
@@ -236,7 +251,7 @@ public class PedidoService {
 
     public boolean verificarEstoque(int idProduto, int qtdeProduto) {
         String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
-        ResponseEntity<EstoqueResponseDto> resp = restTemplate.getForEntity(url, EstoqueResponseDto.class);
+        ResponseEntity<EstoqueResponseDto> resp = rest.getForEntity(url, EstoqueResponseDto.class);
         EstoqueResponseDto estoqueResponse = resp.getBody();
 
         return estoqueResponse != null && estoqueResponse.isStatus() && estoqueResponse.getQuantidade() >= qtdeProduto;
@@ -244,7 +259,7 @@ public class PedidoService {
 
     public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
         String url = "https://compra-sgeu.up.railway.app/estoque/debitar/" + cdProduto + "/" + qtdeDevolvida;
-        ResponseEntity<CompraProdutoRetirarDto> resp = restTemplate.getForEntity(url, CompraProdutoRetirarDto.class);
+        ResponseEntity<CompraProdutoRetirarDto> resp = rest.getForEntity(url, CompraProdutoRetirarDto.class);
         CompraProdutoRetirarDto c = resp.getBody();
 
         return c != null && c.isStatus();
@@ -261,6 +276,7 @@ public class PedidoService {
     }
 
     public PedidoStatusDto devolverPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
+
         Optional<Pedido> op = pdao.findById(idPedido);
 
         if (op.isPresent()) {
@@ -273,6 +289,7 @@ public class PedidoService {
             return PedidoStatusDto.builder()
                     .status("Falha ao devolvido o pedido")
                     .build();
+
         }
     }
 
@@ -294,5 +311,19 @@ public class PedidoService {
         } else {
             System.out.println("Message failed with error: " + response.getMessages().get(0).getErrorText());
         }
+    }
+
+    public PedidoValorVendedorDto valorAnualVendedor(int idVendedor, int ano) {
+        double somaValor = 0;
+
+        List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
+        for (Pedido p : listaPedidos) {
+            if (p.getDataPedido().getYear() == ano) {
+                somaValor += p.getPrecoTotal();
+            }
+        }
+        return PedidoValorVendedorDto.builder()
+                .valorVendas(somaValor)
+                .build();
     }
 }
