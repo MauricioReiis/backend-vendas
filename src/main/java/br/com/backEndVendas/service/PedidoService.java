@@ -65,6 +65,8 @@ public class PedidoService {
 
    }
 
+
+
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
         ResponseEntity<CompraCarrinhoDto> resp = rest.getForEntity(url, CompraCarrinhoDto.class);
@@ -149,7 +151,7 @@ public class PedidoService {
             throw new EntityNotFoundException("Formato de cep inválido!");
         }
 
-        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume());
+        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume(), fretPedido.getIdCliente());
         return PedidoFretDto.builder()
                 .valorFret(fret)
                 .build();
