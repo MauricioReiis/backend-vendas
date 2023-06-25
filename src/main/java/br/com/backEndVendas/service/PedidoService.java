@@ -66,6 +66,8 @@ public class PedidoService {
 
     }
 
+
+
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
         ResponseEntity<CompraCarrinhoDto> resp = rest.getForEntity(url, CompraCarrinhoDto.class);
@@ -126,15 +128,17 @@ public class PedidoService {
         notaVenda.setIdCliente(pedidoJson.getIdCliente());
         notaVenda.setIdVendedor(pedidoJson.getIdVendedor());
         notaVenda.setDataEmissao(LocalDate.now());
-        String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
-        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
-        ClienteCadastroDto d = resp.getBody();
-        assert d != null;
-        if (d.isCadastro()) {
-            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5 / 100));
-        } else {
-            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
-        }
+
+//        String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
+//        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
+//        ClienteCadastroDto d = resp.getBody();
+//        assert d != null;
+//        if (d.isCadastro()){
+//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5/100));
+//        }else{
+//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
+//        }
+
 
         notaVendaDao.save(notaVenda);
 
@@ -150,7 +154,7 @@ public class PedidoService {
             throw new EntityNotFoundException("Formato de cep inválido!");
         }
 
-        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume());
+        String fret = fretService.calcularFret(fretPedido.getCep(), fretPedido.getQtdeVolume(), fretPedido.getIdCliente());
         return PedidoFretDto.builder()
                 .valorFret(fret)
                 .build();
