@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequestMapping("/pedido")
 @RestController
 public class PedidoResource {
@@ -25,7 +27,7 @@ public class PedidoResource {
         return "Serviços ON";
     }
     @PostMapping
-    public ResponseEntity<?> criarPedido(@RequestBody Pedido pedidoJson) {
+    public ResponseEntity<?> criarPedido(@Valid @RequestBody Pedido pedidoJson) {
         try{
             return ResponseEntity.ok(pServ.realizarPedido(pedidoJson));
         }
@@ -47,7 +49,7 @@ public class PedidoResource {
         }
     }
     @PostMapping("/calcular/fret")
-    public ResponseEntity<?> calcularFretPedido(@RequestBody FretPedido fretPedido){
+    public ResponseEntity<?> calcularFretPedido(@Valid @RequestBody FretPedido fretPedido){
         try{
             return ResponseEntity.ok(pServ.calcularFretPedido(fretPedido));
         }
