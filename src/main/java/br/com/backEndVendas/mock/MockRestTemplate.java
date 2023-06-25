@@ -1,12 +1,8 @@
 package br.com.backEndVendas.mock;
 
 
-import br.com.backEndVendas.service.dto.ClienteCadastroDto;
+import br.com.backEndVendas.service.dto.*;
 
-import br.com.backEndVendas.service.dto.ClienteStatusDto;
-import br.com.backEndVendas.service.dto.CompraBuscarProdutoDto;
-import br.com.backEndVendas.service.dto.CompraCarrinhoDto;
-import br.com.backEndVendas.service.dto.CompraProdutoDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -104,15 +100,13 @@ public class MockRestTemplate extends RestTemplate {
                         .build()
         );
 
-        comandos.put("https://localhost:8080/pagamento/carrinho/1",
-                ClienteCadastroDto.builder()
-                        .cadastro(false)
-                        .build()
-        );
 
-        comandos.put("https://localhost:8080/pagamento/carrinho/2",
-                ClienteCadastroDto.builder()
-                        .cadastro(true)
+        comandos.put("https://localhost:8080/modulo-de-pagamentos/carrinho",
+                PagamentosCarrinhoDto.builder()
+                        .clientId(1)
+                        .carrinhoId(1)
+                        .valorTotal(400.00)
+                        .formaPagamento("Crédito")
                         .build()
         );
 

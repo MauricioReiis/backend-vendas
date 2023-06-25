@@ -59,18 +59,20 @@ public class PedidoService {
                     .build();
         }
     }
+    public String realizarPagamento(){
 
-    public PedidoStatusDto realizarPedido(Pedido pedidoJson, int clienteId, int carrinhoId, double valorTotal, String formaPagamento) throws Exception {
-        boolean pgOK = realizarPagamento(clienteId, carrinhoId, valorTotal, formaPagamento);
+        String url = "https://localhost:8080/modulo-de-pagamentos/carrinho";
+        ResponseEntity<PagamentosCarrinhoDto> resp = restTemplate.getForEntity(url, PagamentosCarrinhoDto.class);
+        PagamentosCarrinhoDto c = resp.getBody();
 
-        if (pgOK) {
-            String pedidoResponse = processarPedido(pedidoJson);
-            return PedidoStatusDto.builder()
-                    .status(pedidoResponse)
-                    .build();
-        } else {
-            throw new Exception("O pagamento não foi bem-sucedido. Por favor, tente novamente.");
-        }
+        return "Pagamento Aprovado";
+    }
+
+    public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
+        String pedidoResponse = (processarPedido(pedidoJson));
+        return PedidoStatusDto.builder()
+                .status(pedidoResponse)
+                .build();
     }
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
@@ -180,7 +182,7 @@ public class PedidoService {
                 .build();
     }
 
-    public String registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
+    public void registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
         if (pedido != null) {
             DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
             pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
@@ -203,7 +205,7 @@ public class PedidoService {
                             item.setQuantidade(item.getQuantidade() - qtdeProduto);
                             pedido.setStatusPedido("fechado");
                             devolucaoPedidoService.save(pedidoDevolvido);
-                            return "O produto foi removido com sucesso!";
+                            return;
                         }
                     }
                 }
@@ -227,7 +229,6 @@ public class PedidoService {
                 throw new Exception("Não foi possível atualizar o estoque!");
             }
 
-            return "Pedido devolvido";
         } else {
             throw new Exception("Pedido não encontrado.");
         }
@@ -249,12 +250,11 @@ public class PedidoService {
         return c != null && c.isStatus();
     }
 
-    public static boolean verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
+    public static void verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
         LocalDate dataAtual = LocalDate.now();
         long diferencaDias = (ChronoUnit.DAYS.between(dataDevolucao, dataAtual) * -1);
 
         if (diferencaDias <= diasExpiracao) {
-            return true;
         } else {
             throw new Exception("O prazo para devolução expirou.");
         }

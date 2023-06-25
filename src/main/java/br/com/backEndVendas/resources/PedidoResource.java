@@ -77,5 +77,11 @@ public class PedidoResource {
         }
     }
 
-
+    @PostMapping("modulo-de-pagamentos/carrinho")
+    public ResponseEntity<Object> getPagamento(@RequestBody ) {
+        try {
+            return ResponseEntity.ok();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 }
