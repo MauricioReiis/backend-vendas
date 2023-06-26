@@ -4,7 +4,6 @@ import br.com.backEndVendas.model.*;
 import br.com.backEndVendas.service.dao.NotaVendaDao;
 import br.com.backEndVendas.service.dao.PedidoDao;
 import br.com.backEndVendas.service.dto.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vonage.client.VonageClient;
 import com.vonage.client.sms.MessageStatus;
 import com.vonage.client.sms.SmsSubmissionResponse;
@@ -289,5 +288,16 @@ public class PedidoService {
         return PedidoValorVendedorDto.builder()
                 .valorVendas(somaValor)
                 .build();
+    }
+
+    public List<Pedido> comprasValorVendedor(int idVendedor)throws Exception {
+
+        List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
+
+        if(!listaPedidos.isEmpty()){
+            return listaPedidos;
+
+        }
+        throw new Exception("Id do vendedor não existe.");
     }
 }
