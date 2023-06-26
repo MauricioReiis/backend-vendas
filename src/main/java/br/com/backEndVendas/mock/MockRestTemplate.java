@@ -100,14 +100,6 @@ public class MockRestTemplate extends RestTemplate {
                         .build()
         );
 
-        comandos.put("https://localhost:8080/modulo-de-pagamentos/carrinho",
-                PagamentosCarrinhoDto.builder()
-                        .clientId(1)
-                        .carrinhoId(1)
-                        .valorTotal(400.00)
-                        .formaPagamento("Crédito")
-                        .build()
-        );
 
         comandos.put("https://localhost:8080/crm/validar/cupom/desconto/1",
                 FretPedidoDescontoDto.builder()

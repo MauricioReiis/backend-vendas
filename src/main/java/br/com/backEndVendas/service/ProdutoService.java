@@ -31,7 +31,7 @@ public class ProdutoService {
     }
 
     public boolean validarProdutoEstoque(int idProduto, int quantidade) {
-        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar" + idProduto;
+        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
         ResponseEntity<CompraProdutoDto> resp = rest.getForEntity(url, CompraProdutoDto.class);
         CompraProdutoDto c = resp.getBody();
         int result = c.getQtdEstoque();

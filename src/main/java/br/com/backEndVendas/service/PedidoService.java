@@ -70,17 +70,9 @@ public class PedidoService {
                 .build();
     }
 
-    public boolean validarCarrinho(int idCarrinho, int idCliente) {
-        String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
-        ResponseEntity<CompraCarrinhoDto> resp = rest.getForEntity(url, CompraCarrinhoDto.class);
-        CompraCarrinhoDto c = resp.getBody();
-        boolean result = c.isPgAprovado();
-        return result;
-    }
-
     public String processarPedido(Pedido pedidoJson) throws Exception {
 
-        if (!processarPagamentoService.realizarPagamento(pedidoJson.getIdCliente(), pedidoJson.getIdCarrinho(), pedidoJson.getPrecoTotal(), "cartao" )){
+        if (!processarPagamentoService.realizarPagamento(pedidoJson.getIdCliente(), pedidoJson.getIdCarrinho(), pedidoJson.getPrecoTotal(), "CREDITO" )){
             return "Houve um erro com o pagamento do pedido!";
         }
         Pedido pedido = new Pedido();
@@ -130,7 +122,7 @@ public class PedidoService {
         notaVenda.setIdVendedor(pedidoJson.getIdVendedor());
         notaVenda.setDataEmissao(LocalDate.now());
 
-        String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
+        String url = "https://localhost:8080/crm/cliente/verificarCadastro/" + pedidoJson.getIdCliente();
         ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
         ClienteCadastroDto d = resp.getBody();
         assert d != null;
@@ -140,7 +132,7 @@ public class PedidoService {
             notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
         }
 
-//        String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
+//        String url = "https://localhost:8080/crm/cliente/verificarCadastro/" + pedidoJson.getIdCliente();
 //        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
 //        ClienteCadastroDto d = resp.getBody();
 //        assert d != null;
