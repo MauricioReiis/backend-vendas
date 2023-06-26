@@ -68,6 +68,17 @@ public class PedidoResource {
         }
 
       }
+    @GetMapping("/buscar/compras/vendedor/{idVendedor}")
+    public ResponseEntity<?> getComprasValorVendedor(@PathVariable int idVendedor)
+    {
+        try{
+            return ResponseEntity.ok(pServ.comprasValorVendedor(idVendedor));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+    }
     @GetMapping("/devolucao/{idPedido}/{idProduto}/{qtdeDevolvida}")
     public ResponseEntity<?> devolverPedido(@PathVariable int idPedido, @PathVariable int idProduto, @PathVariable int qtdeDevolvida){
         try{
