@@ -10,6 +10,8 @@ import com.vonage.client.sms.SmsSubmissionResponse;
 import com.vonage.client.sms.messages.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +44,8 @@ public class PedidoService {
 
     @Autowired
     DevolucaoPedidoService devolucaoPedidoService;
+    @Autowired
+    ProcessarPagamentoService processarPagamentoService;
 
 
     public Object buscarPedidoPeloId(int id) {
@@ -58,25 +62,13 @@ public class PedidoService {
         }
     }
 
-    public String realizarPagamento() {
-
-        String url = "https://localhost:8080/modulo-de-pagamentos/carrinho";
-        ResponseEntity<PagamentosCarrinhoDto> resp = rest.getForEntity(url, PagamentosCarrinhoDto.class);
-        PagamentosCarrinhoDto c = resp.getBody();
-
-        return "Pagamento Aprovado";
-    }
-
 
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
         String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
                 .status(pedidoResponse)
                 .build();
-
-
     }
-
 
     public boolean validarCarrinho(int idCarrinho, int idCliente) {
         String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
@@ -86,12 +78,11 @@ public class PedidoService {
         return result;
     }
 
-
     public String processarPedido(Pedido pedidoJson) throws Exception {
-        if (!validarCarrinho(pedidoJson.getIdCarrinho(), pedidoJson.getIdCliente())) {
+
+        if (!processarPagamentoService.realizarPagamento(pedidoJson.getIdCliente(), pedidoJson.getIdCarrinho(), pedidoJson.getPrecoTotal(), "cartao" )){
             return "Houve um erro com o pagamento do pedido!";
         }
-
         Pedido pedido = new Pedido();
         pedido.setPrecoTotal(pedidoJson.getPrecoTotal());
         pedido.setIdCliente(pedidoJson.getIdCliente());

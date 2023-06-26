@@ -5,6 +5,7 @@ import br.com.backEndVendas.model.FretPedido;
 import br.com.backEndVendas.model.Pedido;
 import br.com.backEndVendas.service.PedidoService;
 import br.com.backEndVendas.service.dao.PedidoDao;
+import br.com.backEndVendas.service.dto.PagamentosCarrinhoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,7 @@ public class PedidoResource {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
     @GetMapping("/calcular/vendedor/anual/{idVendedor}/{ano}")
     public ResponseEntity<?> getValorAnualVendedor(@PathVariable int idVendedor, @PathVariable int ano) {
         try {
@@ -81,12 +83,4 @@ public class PedidoResource {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-    @PostMapping("modulo-de-pagamentos/carrinho")
-    public ResponseEntity<Object> getPagamento(@RequestBody ) {
-        try {
-            return ResponseEntity.ok();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
 }
