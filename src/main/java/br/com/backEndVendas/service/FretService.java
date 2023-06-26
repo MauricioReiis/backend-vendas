@@ -39,11 +39,11 @@ public class FretService {
         EnderecoDto uf = buscarCep(cep);
         int preco = obterPrecoEstado(uf.getUf());
         double desconto = aplicarCupomFrete(idCliente);
-        double precoFret = (preco * qtdeVolume) - (idCliente==0?0: desconto);
+        double fretBase = (preco * qtdeVolume);
+        double precoFret = fretBase - (idCliente==0?0: (desconto>=fretBase)?fretBase: desconto);
         String message = "Estado: "+ uf.getUf()+ ", Cidade: "+uf.getLocalidade() + ", Preço fret: "+precoFret+"";
 
         return message;
-
     }
 
 
