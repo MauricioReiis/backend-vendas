@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -17,6 +19,7 @@ public class ItemPedido{
     @JoinColumn(name = "id_pedido")
     private Pedido pedido;
     private int idProduto;
+
     private int quantidade;
 
 

@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +27,16 @@ public class Pedido {
     private List<ItemPedido> itensPedido = new ArrayList<>();
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private NotaVenda notaVenda;
+
+    @NotNull(message = "O preço total não pode ser nulo!")
     private double precoTotal;
     private int idCliente;
     private int idVendedor;
 
     private int idCarrinho;
+
+    @NotNull(message = "O status do pedido não pode estar nulo!")
+    @NotBlank(message = "O status do pedido não pode estar vazio!")
     private String statusPedido;
     private LocalDate dataPedido;
 
