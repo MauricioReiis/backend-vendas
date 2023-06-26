@@ -38,7 +38,7 @@ public class PedidoResource {
     public ResponseEntity<?> getPedido(@PathVariable int id){
         {
             try{
-                return ResponseEntity.ok( pServ);
+                return ResponseEntity.ok(pServ.buscarPedidoPeloId(id));
             }
             catch (Exception e){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
