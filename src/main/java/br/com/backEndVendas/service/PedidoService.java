@@ -9,7 +9,7 @@ import com.vonage.client.sms.MessageStatus;
 import com.vonage.client.sms.SmsSubmissionResponse;
 import com.vonage.client.sms.messages.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -60,6 +60,7 @@ public class PedidoService {
 
 
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
+
         String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
                 .status(pedidoResponse)
@@ -129,6 +130,7 @@ public class PedidoService {
 //        }
 
         notaVendaDao.save(notaVenda);
+        atualizarPontuacao(pedidoJson.getIdCliente(), pedidoJson.getIdPedido());
 
 //        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
 
@@ -317,5 +319,20 @@ public class PedidoService {
            throw new Exception("Id do pedido não existe.");
         }
 
+    }
+
+    public void atualizarPontuacao(int idCliente, int idPedido){
+        String url = "https://backend-crm.up.railway.app/cliente/pontuacao/" + idCliente + "/" + idPedido;
+
+        var atualizarPontuacaoDto = new AtualizarPontuacaoDto().builder()
+                .idPedido(idPedido)
+                .idCliente(idCliente)
+                .build();
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<AtualizarPontuacaoDto> request = new HttpEntity<>(atualizarPontuacaoDto, headers);
+        ResponseEntity<AtualizarPontuacaoDto> response = restTemplate.postForEntity(url, request, AtualizarPontuacaoDto.class);
     }
 }
