@@ -9,6 +9,7 @@ C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\mock\MockRestTemplate.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\resources\NotaVendaResource.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoValorDto.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraCarrinhoDto.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\ItemPedido.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\ItemPedidoService.java
