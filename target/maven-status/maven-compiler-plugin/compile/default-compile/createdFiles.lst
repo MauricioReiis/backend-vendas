@@ -22,6 +22,7 @@ br\com\backEndVendas\service\DevolucaoPedidoService.class
 br\com\backEndVendas\service\FretService.class
 br\com\backEndVendas\resources\NotaVendaResource.class
 br\com\backEndVendas\service\ProdutoService.class
+br\com\backEndVendas\service\dto\AtualizarPontuacaoDto.class
 br\com\backEndVendas\resources\PedidoResource.class
 br\com\backEndVendas\service\dto\PagamentosCarrinhoDto.class
 br\com\backEndVendas\model\ItemPedido.class
@@ -34,6 +35,7 @@ br\com\backEndVendas\model\Pedido.class
 br\com\backEndVendas\service\dto\PedidoFretDto$PedidoFretDtoBuilder.class
 br\com\backEndVendas\service\dto\ClienteStatusDto.class
 br\com\backEndVendas\service\ItemPedidoService.class
+br\com\backEndVendas\service\dto\AtualizarPontuacaoDto$AtualizarPontuacaoDtoBuilder.class
 br\com\backEndVendas\service\dto\FretPedidoDescontoDto$FretPedidoDescontoDtoBuilder.class
 br\com\backEndVendas\service\dao\ItemPedidoDao.class
 br\com\backEndVendas\config\SecurityConfig.class
