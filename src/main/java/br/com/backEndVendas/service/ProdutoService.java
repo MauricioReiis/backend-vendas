@@ -12,43 +12,49 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class ProdutoService {
 
-    @Qualifier("mock")
     @Autowired
     RestTemplate rest;
 
     public CompraBuscarProdutoDto produtoPeloId(int idProduto) {
-        String url = "https://localhost:8080/compras/buscar/produto/"+idProduto;
+        String url = "https://gateway-sgeu.up.railway.app/compras/produto/" + idProduto;
         ResponseEntity<CompraBuscarProdutoDto> resp = rest.getForEntity(url, CompraBuscarProdutoDto.class);
 
         return resp.getBody();
     }
+
     public boolean validarProdutoExistente(int idProduto) {
-        String url = "https://localhost:8080/compras/validar/status/produto/"+idProduto;
+        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
         ResponseEntity<CompraProdutoDto> resp = rest.getForEntity(url, CompraProdutoDto.class);
         CompraProdutoDto c = resp.getBody();
         boolean result = c.isProdutoExistente();
         return result;
     }
-    public boolean validarProdutoEstoque( int idProduto, int quantidade) {
-        String url = "https://localhost:8080/compras/validar/status/produto/"+idProduto;
+
+    public boolean validarProdutoEstoque(int idProduto, int quantidade) {
+        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
         ResponseEntity<CompraProdutoDto> resp = rest.getForEntity(url, CompraProdutoDto.class);
         CompraProdutoDto c = resp.getBody();
         int result = c.getQtdEstoque();
         return result >= quantidade;
     }
 
+//    public boolean vatualizarPontuacaoCliente(int idCliente, double valorVenda) {
+//        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idCliente +"/";
+//        ResponseEntity<CompraProdutoDto> resp = rest.getForEntity(url, CompraProdutoDto.class);
+//        CompraProdutoDto c = resp.getBody();
+//        int result = c.getQtdEstoque();
+//        return result >= quantidade;
+//    }
+
     public int verificarEstoqueDisponível(int idProduto, int quantidade) throws JsonProcessingException {
 
-            if (!validarProdutoExistente(idProduto)){
-                return 1;
-            }
+        if (!validarProdutoExistente(idProduto)) {
+            return 1;
+        }
 
-            if (validarProdutoEstoque( idProduto,quantidade)) {
-
-                return 2;
-            }
-
-
+        if (validarProdutoEstoque(idProduto, quantidade)) {
+            return 2;
+        }
         return 3;
     }
 

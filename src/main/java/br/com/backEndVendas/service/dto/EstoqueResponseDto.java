@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class EstoqueResponseDto {
     private boolean status;
     private int quantidade;
+
 }
+
