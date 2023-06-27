@@ -5,6 +5,7 @@ import br.com.backEndVendas.model.FretPedido;
 import br.com.backEndVendas.model.Pedido;
 import br.com.backEndVendas.service.PedidoService;
 import br.com.backEndVendas.service.dao.PedidoDao;
+import br.com.backEndVendas.service.dto.PagamentosCarrinhoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,18 +27,18 @@ public class PedidoResource {
     public String home() {
         return "Serviços ON";
     }
+
     @PostMapping
     public ResponseEntity<?> criarPedido(@Valid @RequestBody Pedido pedidoJson) {
         try{
             return ResponseEntity.ok(pServ.realizarPedido(pedidoJson));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @GetMapping("buscar/{id}")
-    public ResponseEntity<?> getPedido(@PathVariable int id){
+    public ResponseEntity<?> getPedido(@PathVariable int id) {
         {
             try{
                 return ResponseEntity.ok(pServ.buscarPedidoPeloId(id));
@@ -48,22 +49,21 @@ public class PedidoResource {
 
         }
     }
+
     @PostMapping("/calcular/fret")
     public ResponseEntity<?> calcularFretPedido(@Valid @RequestBody FretPedido fretPedido){
         try{
             return ResponseEntity.ok(pServ.calcularFretPedido(fretPedido));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
     @GetMapping("/calcular/vendedor/{idVendedor}/{ano}/{mes}")
-    public ResponseEntity<?> getValorVendedor(@PathVariable int idVendedor, @PathVariable int ano, @PathVariable int mes)
-    {
-        try{
+    public ResponseEntity<?> getValorVendedor(@PathVariable int idVendedor, @PathVariable int ano, @PathVariable int mes) {
+        try {
             return ResponseEntity.ok(pServ.valorMensalVendedor(idVendedor, ano, mes));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
@@ -80,14 +80,14 @@ public class PedidoResource {
 
     }
     @GetMapping("/devolucao/{idPedido}/{idProduto}/{qtdeDevolvida}")
-    public ResponseEntity<?> devolverPedido(@PathVariable int idPedido, @PathVariable int idProduto, @PathVariable int qtdeDevolvida){
-        try{
-            return ResponseEntity.ok(pServ.cancelarPedidoPeloId( idPedido,  idProduto, qtdeDevolvida ));
-        }
-        catch (Exception e){
+    public ResponseEntity<?> devolverPedido(@PathVariable int idPedido, @PathVariable int idProduto, @PathVariable int qtdeDevolvida) {
+        try {
+            return ResponseEntity.ok(pServ.devolverPedidoPeloId(idPedido, idProduto, qtdeDevolvida));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
     @GetMapping("/calcular/vendedor/anual/{idVendedor}/{ano}")
     public ResponseEntity<?> getValorAnualVendedor(@PathVariable int idVendedor, @PathVariable int ano) {
         try {

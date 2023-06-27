@@ -12,15 +12,29 @@ br\com\backEndVendas\service\dto\EnderecoDto.class
 br\com\backEndVendas\service\dto\EnderecoDto$EnderecoDtoBuilder.class
 br\com\backEndVendas\mock\MockRestTemplate.class
 br\com\backEndVendas\model\Produto.class
+<<<<<<< HEAD
 br\com\backEndVendas\service\dto\FretPedidoDescontoDto.class
 br\com\backEndVendas\service\dto\PedidoValorVendedorDto.class
 br\com\backEndVendas\service\dto\CompraProdutoRetirarDto.class
+=======
+br\com\backEndVendas\service\dto\PagamentosCarrinhoDto$PagamentosCarrinhoDtoBuilder.class
+br\com\backEndVendas\service\dto\FretPedidoDescontoDto.class
+br\com\backEndVendas\service\dto\PedidoValorVendedorDto.class
+br\com\backEndVendas\service\dto\CompraProdutoRetirarDto.class
+br\com\backEndVendas\service\ProcessarPagamentoService.class
+>>>>>>> 8516928d156d1a3b7f2072c1c6ade9445002a267
 br\com\backEndVendas\service\dao\DevolucaoDao.class
 br\com\backEndVendas\service\DevolucaoPedidoService.class
 br\com\backEndVendas\service\FretService.class
 br\com\backEndVendas\resources\NotaVendaResource.class
 br\com\backEndVendas\service\ProdutoService.class
+<<<<<<< HEAD
 br\com\backEndVendas\resources\PedidoResource.class
+=======
+br\com\backEndVendas\service\dto\AtualizarPontuacaoDto.class
+br\com\backEndVendas\resources\PedidoResource.class
+br\com\backEndVendas\service\dto\PagamentosCarrinhoDto.class
+>>>>>>> 8516928d156d1a3b7f2072c1c6ade9445002a267
 br\com\backEndVendas\model\ItemPedido.class
 br\com\backEndVendas\service\dto\CompraCarrinhoDto.class
 br\com\backEndVendas\service\dto\PedidoValorVendedorDto$PedidoValorVendedorDtoBuilder.class
@@ -31,6 +45,10 @@ br\com\backEndVendas\model\Pedido.class
 br\com\backEndVendas\service\dto\PedidoFretDto$PedidoFretDtoBuilder.class
 br\com\backEndVendas\service\dto\ClienteStatusDto.class
 br\com\backEndVendas\service\ItemPedidoService.class
+<<<<<<< HEAD
+=======
+br\com\backEndVendas\service\dto\AtualizarPontuacaoDto$AtualizarPontuacaoDtoBuilder.class
+>>>>>>> 8516928d156d1a3b7f2072c1c6ade9445002a267
 br\com\backEndVendas\service\dto\FretPedidoDescontoDto$FretPedidoDescontoDtoBuilder.class
 br\com\backEndVendas\service\dao\ItemPedidoDao.class
 br\com\backEndVendas\config\SecurityConfig.class

@@ -100,6 +100,7 @@ public class MockRestTemplate extends RestTemplate {
                         .build()
         );
 
+
         comandos.put("https://localhost:8080/crm/validar/cupom/desconto/1",
                 FretPedidoDescontoDto.builder()
                         .valorDesconto(10.0)

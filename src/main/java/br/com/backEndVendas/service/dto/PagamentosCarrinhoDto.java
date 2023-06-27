@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EstoqueResponseDto {
-    private boolean status;
-    private int quantidade;
+public class PagamentosCarrinhoDto {
 
+    private int clientId, carrinhoId;
+
+    private double valorTotal;
+
+    private String formaPagamento;
 }
-

@@ -9,8 +9,7 @@ import com.vonage.client.sms.MessageStatus;
 import com.vonage.client.sms.SmsSubmissionResponse;
 import com.vonage.client.sms.messages.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -33,15 +32,17 @@ public class PedidoService {
 
     @Autowired
     ProdutoService produtoService;
-    @Qualifier("mock")
     @Autowired
-    RestTemplate rest;
+    RestTemplate restTemplate;
 
     @Autowired
     FretService fretService;
 
     @Autowired
     DevolucaoPedidoService devolucaoPedidoService;
+    @Autowired
+    ProcessarPagamentoService processarPagamentoService;
+
 
     public Object buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
@@ -57,30 +58,20 @@ public class PedidoService {
         }
     }
 
+
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
+
         String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
                 .status(pedidoResponse)
                 .build();
-
     }
-
-
-
-    public boolean validarCarrinho(int idCarrinho, int idCliente) {
-        String url = "https://localhost:8080/compras/validar/pagamento/" + idCliente + "/" + idCarrinho + "/json/";
-        ResponseEntity<CompraCarrinhoDto> resp = rest.getForEntity(url, CompraCarrinhoDto.class);
-        CompraCarrinhoDto c = resp.getBody();
-        boolean result = c.isPgAprovado();
-        return result;
-    }
-
 
     public String processarPedido(Pedido pedidoJson) throws Exception {
-        if (!validarCarrinho(pedidoJson.getIdCarrinho(), pedidoJson.getIdCliente())) {
+
+        if (!processarPagamentoService.realizarPagamento(pedidoJson.getIdCliente(), pedidoJson.getIdCarrinho(), pedidoJson.getPrecoTotal(), "CREDITO" )){
             return "Houve um erro com o pagamento do pedido!";
         }
-
         Pedido pedido = new Pedido();
         pedido.setPrecoTotal(pedidoJson.getPrecoTotal());
         pedido.setIdCliente(pedidoJson.getIdCliente());
@@ -128,18 +119,18 @@ public class PedidoService {
         notaVenda.setIdVendedor(pedidoJson.getIdVendedor());
         notaVenda.setDataEmissao(LocalDate.now());
 
-//        String url = "https://localhost:8080/crm/cliente/verificarCadastro" + pedidoJson.getIdCliente();
+//        String url = "https://localhost:8080/crm/cliente/verificarCadastro/" + pedidoJson.getIdCliente();
 //        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
 //        ClienteCadastroDto d = resp.getBody();
 //        assert d != null;
-//        if (d.isCadastro()){
-//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5/100));
-//        }else{
+//        if (d.isCadastro()) {
+//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5 / 100));
+//        } else {
 //            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
 //        }
 
-
         notaVendaDao.save(notaVenda);
+        atualizarPontuacao(pedidoJson.getIdCliente(), pedidoJson.getIdPedido());
 
 //        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
 
@@ -176,32 +167,7 @@ public class PedidoService {
                 .build();
     }
 
-    public PedidoStatusDto cancelarPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
-        Optional<Pedido> op = pdao.findById(idPedido);
-
-        if (op.isPresent()) {
-            LocalDate d = java.time.LocalDate.now();
-            registrarDevolucao(op.get(), idProduto, qtdeDevolvida, d);
-            return PedidoStatusDto.builder()
-                    .status("O pedido foi cancelado com sucesso!")
-                    .build();
-        } else {
-            return PedidoStatusDto.builder()
-                    .status("Falha ao cancelar o pedido")
-                    .build();
-        }
-    }
-
-    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
-
-        String url = "https://localhost:8080/compras/produto/devolver/" + cdProduto + "/" + qtdeDevolvida;
-        ResponseEntity<CompraProdutoRetirarDto> resp = rest.getForEntity(url, CompraProdutoRetirarDto.class);
-        CompraProdutoRetirarDto c = resp.getBody();
-
-        return c.isStatus();
-    }
-
-    public String registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
+    public void registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
         if (pedido != null) {
             DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
             pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
@@ -224,42 +190,83 @@ public class PedidoService {
                             item.setQuantidade(item.getQuantidade() - qtdeProduto);
                             pedido.setStatusPedido("fechado");
                             devolucaoPedidoService.save(pedidoDevolvido);
-                            return "O produto foi removido com sucesso!";
+                            return;
                         }
                     }
                 }
             }
 
             if (!produtoEncontrado) {
-                throw new Exception("Produto não encontrado no pedido.");
+                throw new Exception("Produto não encontrado no pedido!");
             } else if (!estoqueSuficiente) {
-                throw new Exception("Quantidade devolvida maior do que a registrada no pedido.");
+                throw new Exception("Quantidade devolvida maior do que a registrada no pedido!");
             }
 
-            if (!atualizarEstoque(pedidoDevolvido.getCodigoProduto(), pedidoDevolvido.getQtdeDevolvida())) {
-                throw new Exception("Não foi possível devolver o produto.");
+            if (!verificarEstoque(idProduto, qtdeProduto)) {
+                throw new Exception("Quantidade indisponível em estoque!");
             }
-            return "Pedido devolvido";
+
+            if (!produtoService.validarProdutoExistente(idProduto)) {
+                throw new Exception("Produto informado não existe!");
+            }
+
+            if (!atualizarEstoque(idProduto, qtdeProduto)) {
+                throw new Exception("Não foi possível atualizar o estoque!");
+            }
+
         } else {
             throw new Exception("Pedido não encontrado.");
         }
     }
 
-    public static boolean verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
+    public boolean verificarEstoque(int idProduto, int qtdeProduto) {
+        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
+        ResponseEntity<EstoqueResponseDto> resp = restTemplate.getForEntity(url, EstoqueResponseDto.class);
+        EstoqueResponseDto estoqueResponse = resp.getBody();
+
+        return estoqueResponse != null && estoqueResponse.isStatus() && estoqueResponse.getQuantidade() >= qtdeProduto;
+    }
+
+    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
+        String url = "https://compra-sgeu.up.railway.app/estoque/debitar/" + cdProduto + "/" + qtdeDevolvida;
+        ResponseEntity<CompraProdutoRetirarDto> resp = restTemplate.getForEntity(url, CompraProdutoRetirarDto.class);
+        CompraProdutoRetirarDto c = resp.getBody();
+
+        return c != null && c.isStatus();
+    }
+
+    public static void verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
         LocalDate dataAtual = LocalDate.now();
         long diferencaDias = (ChronoUnit.DAYS.between(dataDevolucao, dataAtual) * -1);
 
         if (diferencaDias <= diasExpiracao) {
-            return true;
         } else {
             throw new Exception("O prazo para devolução expirou.");
         }
     }
 
+    public PedidoStatusDto devolverPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
+
+        Optional<Pedido> op = pdao.findById(idPedido);
+
+        if (op.isPresent()) {
+            LocalDate d = java.time.LocalDate.now();
+            registrarDevolucao(op.get(), idProduto, qtdeDevolvida, d);
+            return PedidoStatusDto.builder()
+                    .status("O pedido foi devolvido com sucesso!")
+                    .build();
+        } else {
+            return PedidoStatusDto.builder()
+                    .status("Falha ao devolvido o pedido")
+                    .build();
+
+        }
+    }
+
     public void vonageApi(int idPedido, int idCliente) {
 
-        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente;
-        ResponseEntity<ClienteStatusDto> resp = rest.getForEntity(url, ClienteStatusDto.class);
+        String url = "https://backend-crm.up.railway.app/cliente/telefone/" + idCliente;
+        ResponseEntity<ClienteStatusDto> resp = restTemplate.getForEntity(url, ClienteStatusDto.class);
         ClienteStatusDto c = resp.getBody();
 
         VonageClient client = VonageClient.builder().apiKey("e25b3d26").apiSecret("QzJjoOs4Jpufk1Kq").build();
@@ -312,5 +319,20 @@ public class PedidoService {
            throw new Exception("Id do pedido não existe.");
         }
 
+    }
+
+    public void atualizarPontuacao(int idCliente, int idPedido){
+        String url = "https://backend-crm.up.railway.app/cliente/pontuacao/" + idCliente + "/" + idPedido;
+
+        var atualizarPontuacaoDto = new AtualizarPontuacaoDto().builder()
+                .idPedido(idPedido)
+                .idCliente(idCliente)
+                .build();
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<AtualizarPontuacaoDto> request = new HttpEntity<>(atualizarPontuacaoDto, headers);
+        ResponseEntity<AtualizarPontuacaoDto> response = restTemplate.postForEntity(url, request, AtualizarPontuacaoDto.class);
     }
 }
