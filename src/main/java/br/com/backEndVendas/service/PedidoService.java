@@ -201,7 +201,7 @@ public class PedidoService {
                             break;
                         } else {
                             item.setQuantidade(item.getQuantidade() - qtdeProduto);
-                            pedido.setStatusPedido("fechado");
+                            pedido.setStatusPedido("devolvido");
                             devolucaoPedidoService.save(pedidoDevolvido);
                             return;
                         }
