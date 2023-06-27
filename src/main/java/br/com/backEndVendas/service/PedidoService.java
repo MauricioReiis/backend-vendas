@@ -300,4 +300,17 @@ public class PedidoService {
         }
         throw new Exception("Id do vendedor não existe.");
     }
+
+    public PedidoValorDto getValorPedido(int idPedido)throws Exception {
+        Optional<Pedido> op = pdao.findById(idPedido);
+        if (op.isPresent()) {
+            PedidoValorDto pedidoDto = PedidoValorDto.builder()
+                    .valorTotal(op.get().getPrecoTotal())
+                    .build();
+            return pedidoDto;
+        } else {
+           throw new Exception("Id do pedido não existe.");
+        }
+
+    }
 }
