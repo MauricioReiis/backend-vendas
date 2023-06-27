@@ -76,10 +76,11 @@
 			<version>2.9.2</version>
 		</dependency>
 		<dependency>
-		<groupId>com.microsoft.sqlserver</groupId>
-		<artifactId>mssql-jdbc</artifactId>
-		<version>9.4.0.jre11</version>
-	</dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.27</version>
+		</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

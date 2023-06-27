@@ -130,7 +130,7 @@ public class PedidoService {
 //        }
 
         notaVendaDao.save(notaVenda);
-        atualizarPontuacao(pedidoJson.getIdCliente(), pedidoJson.getIdPedido());
+//        atualizarPontuacao(pedidoJson.getIdCliente(), pedidoJson.getIdPedido());
 
 //        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
 
@@ -322,7 +322,7 @@ public class PedidoService {
     }
 
     public void atualizarPontuacao(int idCliente, int idPedido){
-        String url = "https://backend-crm.up.railway.app/cliente/pontuacao/" + idCliente + "/" + idPedido;
+        String url = "https://backend-crm.up.railway.app/cliente/pontuacao/" + idCliente + "/" + 1;
 
         var atualizarPontuacaoDto = new AtualizarPontuacaoDto().builder()
                 .idPedido(idPedido)
