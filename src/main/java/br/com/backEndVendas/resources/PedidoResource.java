@@ -68,7 +68,7 @@ public class PedidoResource {
         }
 
       }
-    @GetMapping("/buscar/compras/vendedor/{idVendedor}")
+    @GetMapping("/buscar/vendas/vendedor/{idVendedor}")
     public ResponseEntity<?> getComprasValorVendedor(@PathVariable int idVendedor)
     {
         try{
@@ -92,6 +92,15 @@ public class PedidoResource {
     public ResponseEntity<?> getValorAnualVendedor(@PathVariable int idVendedor, @PathVariable int ano) {
         try {
             return ResponseEntity.ok(pServ.valorAnualVendedor(idVendedor, ano));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/buscar/valor/pedido/{idPedido}")
+    public ResponseEntity<?> getValorPedido(@PathVariable int idPedido) {
+        try {
+            return ResponseEntity.ok(pServ.getValorPedido(idPedido));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
