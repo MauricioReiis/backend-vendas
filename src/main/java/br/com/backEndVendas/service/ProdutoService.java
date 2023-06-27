@@ -38,6 +38,14 @@ public class ProdutoService {
         return result >= quantidade;
     }
 
+//    public boolean vatualizarPontuacaoCliente(int idCliente, double valorVenda) {
+//        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idCliente +"/";
+//        ResponseEntity<CompraProdutoDto> resp = rest.getForEntity(url, CompraProdutoDto.class);
+//        CompraProdutoDto c = resp.getBody();
+//        int result = c.getQtdEstoque();
+//        return result >= quantidade;
+//    }
+
     public int verificarEstoqueDisponível(int idProduto, int quantidade) throws JsonProcessingException {
 
         if (!validarProdutoExistente(idProduto)) {
