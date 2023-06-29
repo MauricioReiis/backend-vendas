@@ -2,10 +2,7 @@ package br.com.backEndVendas.service;
 
 import br.com.backEndVendas.service.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,15 +38,18 @@ public class ProdutoService {
         return estoqueResponse != null && estoqueResponse.isProdutoExistente() && estoqueResponse.getQtdEstoque() >= qtdeProduto;
     }
 
-    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
-        String url = "https://compra-sgeu.up.railway.app/estoque/debitar/" + cdProduto + "/" + qtdeDevolvida;
-        HttpEntity<Object> entity = new HttpEntity<>(null);
-        double c = rest.exchange(url, HttpMethod.POST, entity, Double.class, cdProduto, qtdeDevolvida).getBody();
+    public Boolean atualizarEstoque(int idProduto, int qnt) {
+        String url = "https://gateway-sgeu.up.railway.app/compras/estoque/debitar";
 
-        ResponseEntity<String> response = rest.exchange(url, HttpMethod.POST, null, String.class);
+        try {
+            AtualizarEstoqueDto atualizarEstoqueDto = new AtualizarEstoqueDto(idProduto, qnt);
+            HttpEntity<AtualizarEstoqueDto> requestEntity = new HttpEntity<>(atualizarEstoqueDto);
+            ResponseEntity<AtualizarEstoqueDto> response = rest.exchange(url, HttpMethod.POST, requestEntity, AtualizarEstoqueDto.class);
 
-        return true;
-
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {

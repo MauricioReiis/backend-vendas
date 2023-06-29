@@ -219,35 +219,6 @@ public class PedidoService {
         }
     }
 
-<<<<<<< HEAD
-=======
-    public boolean verificarEstoque(int idProduto, int qtdeProduto) {
-        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
-        ResponseEntity<EstoqueResponseDto> resp = restTemplate.getForEntity(url, EstoqueResponseDto.class);
-        EstoqueResponseDto estoqueResponse = resp.getBody();
-
-        return estoqueResponse != null && estoqueResponse.isStatus() && estoqueResponse.getQuantidade() >= qtdeProduto;
-    }
-
-    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
-        String url = "https://compra-sgeu.up.railway.app/estoque/debitar/" + cdProduto + "/" + qtdeDevolvida;
-        ResponseEntity<CompraProdutoRetirarDto> resp = restTemplate.getForEntity(url, CompraProdutoRetirarDto.class);
-        CompraProdutoRetirarDto c = resp.getBody();
-
-        return c != null && c.isStatus();
-    }
-
-    public static void verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
-        LocalDate dataAtual = LocalDate.now();
-        long diferencaDias = (ChronoUnit.DAYS.between(dataDevolucao, dataAtual) * -1);
-
-        if (diferencaDias <= diasExpiracao) {
-        } else {
-            throw new Exception("O prazo para devolução expirou.");
-        }
-    }
-
->>>>>>> 3275f8804ea8e605e11c2ac33e6473ec531cdb1e
     public PedidoStatusDto devolverPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
 
         Optional<Pedido> op = pdao.findById(idPedido);

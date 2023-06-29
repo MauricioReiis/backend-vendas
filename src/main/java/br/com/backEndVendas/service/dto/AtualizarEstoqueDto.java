@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AtualizarEstoqueDto {
 
-    private int cdProduto, qtdeDevolvida;
+    private int idProduto, qnt;
 }
