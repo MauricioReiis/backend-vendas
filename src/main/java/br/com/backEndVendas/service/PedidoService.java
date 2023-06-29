@@ -61,6 +61,7 @@ public class PedidoService {
 
 
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
+
         String pedidoResponse = (processarPedido(pedidoJson));
         return PedidoStatusDto.builder()
                 .status(pedidoResponse)
@@ -105,7 +106,9 @@ public class PedidoService {
 
         pedido.setItensPedido(itensPedido);
 
+
         pdao.save(pedido);
+
 
         List<Integer> idsProduto = new ArrayList<>();
         for (ItemPedido itemPedido : pedido.getItensPedido()) {
@@ -127,6 +130,8 @@ public class PedidoService {
 //        } else {
 //            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
 //        }
+
+        atualizarPontuacao(pedidoJson.getIdCliente(), pedido.getIdPedido());
 
         notaVendaDao.save(notaVenda);
 
@@ -294,4 +299,26 @@ public class PedidoService {
         }
 
     }
+
+    public void atualizarPontuacao(int idCliente, int idPedido) {
+        String url = "https://backend-crm.up.railway.app/cliente/pontuacao";
+
+        try {
+            var atualizarPontuacaoDto = AtualizarPontuacaoDto.builder()
+                    .id(idCliente)
+                    .idPedido(3)
+                    .build();
+
+            HttpEntity<Object> requestEntity = new HttpEntity<>(atualizarPontuacaoDto);
+            ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class, atualizarPontuacaoDto);
+
+            System.out.println(response.getBody());
+
+        } catch (Exception e) {
+            System.err.println("Ocorreu um erro ao atualizar a pontuação: " + e.getMessage());
+        }
+    }
+
+
+
 }
