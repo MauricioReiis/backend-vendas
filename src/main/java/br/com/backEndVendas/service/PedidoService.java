@@ -33,9 +33,8 @@ public class PedidoService {
 
     @Autowired
     ProdutoService produtoService;
-    @Qualifier("mock")
     @Autowired
-    RestTemplate rest;
+    RestTemplate restTemplate;
 
     @Autowired
     FretService fretService;
@@ -119,26 +118,15 @@ public class PedidoService {
         notaVenda.setIdVendedor(pedidoJson.getIdVendedor());
         notaVenda.setDataEmissao(LocalDate.now());
 
-        String url = "https://localhost:8080/crm/cliente/verificarCadastro/" + pedidoJson.getIdCliente();
-        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
-        ClienteCadastroDto d = resp.getBody();
-        assert d != null;
-        if (d.isCadastro()) {
-            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5 / 100));
-        } else {
-            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
-        }
-
 //        String url = "https://localhost:8080/crm/cliente/verificarCadastro/" + pedidoJson.getIdCliente();
 //        ResponseEntity<ClienteCadastroDto> resp = rest.getForEntity(url, ClienteCadastroDto.class);
 //        ClienteCadastroDto d = resp.getBody();
 //        assert d != null;
-//        if (d.isCadastro()){
-//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5/100));
-//        }else{
+//        if (d.isCadastro()) {
+//            notaVenda.setValorTotal(pedidoJson.getPrecoTotal() * (5 / 100));
+//        } else {
 //            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
 //        }
-
 
         notaVendaDao.save(notaVenda);
 
@@ -231,6 +219,35 @@ public class PedidoService {
         }
     }
 
+<<<<<<< HEAD
+=======
+    public boolean verificarEstoque(int idProduto, int qtdeProduto) {
+        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
+        ResponseEntity<EstoqueResponseDto> resp = restTemplate.getForEntity(url, EstoqueResponseDto.class);
+        EstoqueResponseDto estoqueResponse = resp.getBody();
+
+        return estoqueResponse != null && estoqueResponse.isStatus() && estoqueResponse.getQuantidade() >= qtdeProduto;
+    }
+
+    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
+        String url = "https://compra-sgeu.up.railway.app/estoque/debitar/" + cdProduto + "/" + qtdeDevolvida;
+        ResponseEntity<CompraProdutoRetirarDto> resp = restTemplate.getForEntity(url, CompraProdutoRetirarDto.class);
+        CompraProdutoRetirarDto c = resp.getBody();
+
+        return c != null && c.isStatus();
+    }
+
+    public static void verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
+        LocalDate dataAtual = LocalDate.now();
+        long diferencaDias = (ChronoUnit.DAYS.between(dataDevolucao, dataAtual) * -1);
+
+        if (diferencaDias <= diasExpiracao) {
+        } else {
+            throw new Exception("O prazo para devolução expirou.");
+        }
+    }
+
+>>>>>>> 3275f8804ea8e605e11c2ac33e6473ec531cdb1e
     public PedidoStatusDto devolverPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
 
         Optional<Pedido> op = pdao.findById(idPedido);
@@ -251,8 +268,8 @@ public class PedidoService {
 
     public void vonageApi(int idPedido, int idCliente) {
 
-        String url = "https://localhost:8080/crm/buscar/cliente/" + idCliente;
-        ResponseEntity<ClienteStatusDto> resp = rest.getForEntity(url, ClienteStatusDto.class);
+        String url = "https://backend-crm.up.railway.app/cliente/telefone/" + idCliente;
+        ResponseEntity<ClienteStatusDto> resp = restTemplate.getForEntity(url, ClienteStatusDto.class);
         ClienteStatusDto c = resp.getBody();
 
         VonageClient client = VonageClient.builder().apiKey("e25b3d26").apiSecret("QzJjoOs4Jpufk1Kq").build();
@@ -281,5 +298,29 @@ public class PedidoService {
         return PedidoValorVendedorDto.builder()
                 .valorVendas(somaValor)
                 .build();
+    }
+
+    public List<Pedido> comprasValorVendedor(int idVendedor)throws Exception {
+
+        List<Pedido> listaPedidos = pdao.findByIdVendedor(idVendedor);
+
+        if(!listaPedidos.isEmpty()){
+            return listaPedidos;
+
+        }
+        throw new Exception("Id do vendedor não existe.");
+    }
+
+    public PedidoValorDto getValorPedido(int idPedido)throws Exception {
+        Optional<Pedido> op = pdao.findById(idPedido);
+        if (op.isPresent()) {
+            PedidoValorDto pedidoDto = PedidoValorDto.builder()
+                    .valorTotal(op.get().getPrecoTotal())
+                    .build();
+            return pedidoDto;
+        } else {
+           throw new Exception("Id do pedido não existe.");
+        }
+
     }
 }
