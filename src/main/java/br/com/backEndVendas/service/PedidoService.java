@@ -330,7 +330,7 @@ public class PedidoService {
         try {
             var atualizarPontuacaoDto = AtualizarPontuacaoDto.builder()
                     .id(idCliente)
-                    .idPedido(3)
+                    .idPedido(idPedido)
                     .build();
 
             HttpEntity<Object> requestEntity = new HttpEntity<>(atualizarPontuacaoDto);
