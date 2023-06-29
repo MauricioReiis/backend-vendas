@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EstoqueResponseDto {
-    private boolean status;
-    private int quantidade;
+    private boolean produtoExistente;
+    private int qtdEstoque;
 
 }
 

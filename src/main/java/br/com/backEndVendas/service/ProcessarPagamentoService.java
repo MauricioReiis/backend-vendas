@@ -16,18 +16,12 @@ public class ProcessarPagamentoService {
     @Autowired
     private RestTemplate rest;
 
-    public boolean realizarPagamento(int clientId, int carrinhoId, double valorTotal, String formaPagamento) throws JsonProcessingException {
+    public boolean realizarPagamento(int clientId, int carrinhoId, double valorTotal, String formaPagamento) {
         String url = "https://modulo-pagamento-production.up.railway.app/modulo-de-pagamentos/carrinho";
-        PagamentosCarrinhoDto pagamentoCarrinhoDto = new PagamentosCarrinhoDto();
-        pagamentoCarrinhoDto.setClientId(clientId);
-        pagamentoCarrinhoDto.setCarrinhoId(carrinhoId);
-        pagamentoCarrinhoDto.setValorTotal(valorTotal);
-        pagamentoCarrinhoDto.setFormaPagamento(formaPagamento);
+        var pagamentoCarrinhoDto = new PagamentosCarrinhoDto(clientId, carrinhoId, valorTotal, formaPagamento);
 
         HttpEntity<PagamentosCarrinhoDto> requestEntity = new HttpEntity<>(pagamentoCarrinhoDto);
         ResponseEntity<Boolean> response = rest.exchange(url, HttpMethod.POST, requestEntity, Boolean.class);
-
-        System.out.println(response.getBody());
 
         if (response.getStatusCode() == HttpStatus.OK) {
             Boolean isValid  = response.getBody();

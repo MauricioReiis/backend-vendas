@@ -30,6 +30,7 @@ C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraProdutoRetirarDto.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\FretPedidoDescontoDto.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\NotaVenda.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\AtualizarEstoqueDto.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\NotaVendaService.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\BackEndVendasApplication.java
 C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoStatusDto.java

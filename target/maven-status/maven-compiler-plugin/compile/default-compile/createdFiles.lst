@@ -16,6 +16,7 @@ br\com\backEndVendas\service\dto\PagamentosCarrinhoDto$PagamentosCarrinhoDtoBuil
 br\com\backEndVendas\service\dto\FretPedidoDescontoDto.class
 br\com\backEndVendas\service\dto\PedidoValorVendedorDto.class
 br\com\backEndVendas\service\dto\CompraProdutoRetirarDto.class
+br\com\backEndVendas\service\dto\AtualizarEstoqueDto.class
 br\com\backEndVendas\service\ProcessarPagamentoService.class
 br\com\backEndVendas\service\dao\DevolucaoDao.class
 br\com\backEndVendas\service\DevolucaoPedidoService.class
@@ -28,6 +29,7 @@ br\com\backEndVendas\service\dto\PagamentosCarrinhoDto.class
 br\com\backEndVendas\model\ItemPedido.class
 br\com\backEndVendas\service\dto\CompraCarrinhoDto.class
 br\com\backEndVendas\service\dto\PedidoValorVendedorDto$PedidoValorVendedorDtoBuilder.class
+br\com\backEndVendas\service\dto\AtualizarEstoqueDto$AtualizarEstoqueDtoBuilder.class
 br\com\backEndVendas\service\dto\PedidoDto.class
 br\com\backEndVendas\service\dto\ClienteCadastroDto.class
 br\com\backEndVendas\service\dto\CompraBuscarProdutoDto.class
