@@ -18,10 +18,14 @@ public class DevolucaoPedido {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         private int id;
-        private int codigoPedido;
-        private int codigoProduto;
-        private int qtdeDevolvida;
+        private int codigoPedido, codigoProduto, qtdeDevolvida;
 
         private LocalDate dataDevolucao;
 
+        public DevolucaoPedido(int codigoPedido, int codigoProduto, int qtdeDevolvida, LocalDate dataDevolucao) {
+                this.codigoPedido = codigoPedido;
+                this.codigoProduto = codigoProduto;
+                this.qtdeDevolvida = qtdeDevolvida;
+                this.dataDevolucao = dataDevolucao;
+        }
 }

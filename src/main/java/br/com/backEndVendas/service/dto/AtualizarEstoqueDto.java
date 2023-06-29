@@ -1,5 +1,6 @@
 package br.com.backEndVendas.service.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EstoqueResponseDto {
-    private boolean produtoExistente;
-    private int qtdEstoque;
+public class AtualizarEstoqueDto {
 
+    private int idProduto, qnt;
 }
-
