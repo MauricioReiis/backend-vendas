@@ -1,38 +1,38 @@
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\FretService.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\model\FretPedido.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\ProdutoService.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\mock\MockRestTemplate.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\model\DevolucaoPedido.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\resources\NotaVendaResource.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\DevolucaoPedidoService.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\model\Produto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\ClienteCadastroDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\ItemPedidoService.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\config\SecurityConfig.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\PedidoDao.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\ItemPedidoDao.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraBuscarProdutoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\AtualizarPontuacaoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\NotaVendaDao.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\resources\PedidoResource.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoFretDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoValorVendedorDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraCarrinhoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\FretPedidoDescontoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraProdutoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\ProcessarPagamentoService.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\EstoqueResponseDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\PedidoService.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\ClienteStatusDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\BackEndVendasApplication.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\model\ItemPedido.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraProdutoRetirarDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\EnderecoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\DevolucaoDao.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\model\Pedido.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoValorDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PagamentosCarrinhoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\model\NotaVenda.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoStatusDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoDto.java
-C:\Users\rafael.r\OneDrive - COMPASSO TECNOLOGIA LTDA\Área de Trabalho\back-end\back-end-vendas\src\main\java\br\com\backEndVendas\service\NotaVendaService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\FretService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\Pedido.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoValorVendedorDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\FretPedido.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraBuscarProdutoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PagamentosCarrinhoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\NotaVendaDao.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoFretDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\EnderecoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\mock\MockRestTemplate.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\resources\NotaVendaResource.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\ProcessarPagamentoService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoValorDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraCarrinhoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\ItemPedido.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\AtualizarPontuacaoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\ItemPedidoService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\ItemPedidoDao.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\ClienteStatusDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraProdutoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\EstoqueResponseDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\ProdutoService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\config\SecurityConfig.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\PedidoDao.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\Produto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\DevolucaoPedido.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\DevolucaoPedidoService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\PedidoService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\CompraProdutoRetirarDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\FretPedidoDescontoDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\model\NotaVenda.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\NotaVendaService.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\BackEndVendasApplication.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\PedidoStatusDto.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\resources\PedidoResource.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dao\DevolucaoDao.java
+C:\Users\rafae\Desktop\ADM-BD\back-end-vendas\src\main\java\br\com\backEndVendas\service\dto\ClienteCadastroDto.java
