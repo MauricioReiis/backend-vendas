@@ -106,7 +106,9 @@ public class PedidoService {
 
         pedido.setItensPedido(itensPedido);
 
+
         pdao.save(pedido);
+
 
         List<Integer> idsProduto = new ArrayList<>();
         for (ItemPedido itemPedido : pedido.getItensPedido()) {
@@ -129,8 +131,9 @@ public class PedidoService {
 //            notaVenda.setValorTotal(pedidoJson.getPrecoTotal());
 //        }
 
+        atualizarPontuacao(pedidoJson.getIdCliente(), pedido.getIdPedido());
+
         notaVendaDao.save(notaVenda);
-//        atualizarPontuacao(pedidoJson.getIdCliente(), pedidoJson.getIdPedido());
 
 //        vonageApi(pedidoJson.getIdPedido(),pedidoJson.getIdCliente());
 
@@ -321,18 +324,25 @@ public class PedidoService {
 
     }
 
-    public void atualizarPontuacao(int idCliente, int idPedido){
-        String url = "https://backend-crm.up.railway.app/cliente/pontuacao/" + idCliente + "/" + 1;
+    public void atualizarPontuacao(int idCliente, int idPedido) {
+        String url = "https://backend-crm.up.railway.app/cliente/pontuacao";
 
-        var atualizarPontuacaoDto = new AtualizarPontuacaoDto().builder()
-                .idPedido(idPedido)
-                .idCliente(idCliente)
-                .build();
+        try {
+            var atualizarPontuacaoDto = AtualizarPontuacaoDto.builder()
+                    .id(idCliente)
+                    .idPedido(3)
+                    .build();
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<AtualizarPontuacaoDto> request = new HttpEntity<>(atualizarPontuacaoDto, headers);
-        ResponseEntity<AtualizarPontuacaoDto> response = restTemplate.postForEntity(url, request, AtualizarPontuacaoDto.class);
+            HttpEntity<Object> requestEntity = new HttpEntity<>(atualizarPontuacaoDto);
+            ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class, atualizarPontuacaoDto);
+
+            System.out.println(response.getBody());
+
+        } catch (Exception e) {
+            System.err.println("Ocorreu um erro ao atualizar a pontuação: " + e.getMessage());
+        }
     }
+
+
+
 }

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AtualizarPontuacaoDto {
-    int idCliente, idPedido;
+    int id, idPedido;
 }
