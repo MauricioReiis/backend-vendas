@@ -9,7 +9,8 @@ import com.vonage.client.sms.MessageStatus;
 import com.vonage.client.sms.SmsSubmissionResponse;
 import com.vonage.client.sms.messages.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -172,40 +172,15 @@ public class PedidoService {
 
     public void registrarDevolucao(Pedido pedido, int idProduto, int qtdeProduto, LocalDate dataDev) throws Exception {
         if (pedido != null) {
-            DevolucaoPedido pedidoDevolvido = new DevolucaoPedido();
-            pedidoDevolvido.setCodigoPedido(pedido.getIdPedido());
-            pedidoDevolvido.setCodigoProduto(idProduto);
-            pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
-            pedidoDevolvido.setDataDevolucao(dataDev);
+            DevolucaoPedido pedidoDevolvido = new DevolucaoPedido(pedido.getIdPedido(), idProduto, qtdeProduto, dataDev);
             produtoService.verificarPrazoDevolucao(dataDev, qtdeProduto);
 
-            boolean estoqueSuficiente = true;
-            boolean produtoEncontrado = false;
 
-            if (!pedido.getItensPedido().isEmpty()) {
-                for (ItemPedido item : pedido.getItensPedido()) {
-                    if (item.getIdProduto() != 0 && item.getIdProduto() == idProduto) {
-                        produtoEncontrado = true;
-                        if (item.getQuantidade() < qtdeProduto) {
-                            estoqueSuficiente = false;
-                            break;
-                        } else {
-                            item.setQuantidade(item.getQuantidade() - qtdeProduto);
-                            pedido.setStatusPedido("devolvido");
-                            devolucaoPedidoService.save(pedidoDevolvido);
-                            return;
-                        }
-                    }
-                }
-            }
+                // verificar se o produto existe
+                // verificar se a quantidade do produto é igual a quantidade do pedido
 
-            if (!produtoEncontrado) {
-                throw new Exception("Produto não encontrado no pedido!");
-            }
 
-            if (!estoqueSuficiente) {
-                throw new Exception("Quantidade devolvida maior do que a registrada no pedido!");
-            }
+
 
             if (!produtoService.verificarEstoque(idProduto, qtdeProduto)) {
                 throw new Exception("Quantidade indisponível em estoque!");
@@ -224,7 +199,7 @@ public class PedidoService {
         }
     }
 
-    public PedidoStatusDto devolverPedidoPeloId(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
+    public PedidoStatusDto atualizarStatus(int idPedido, int idProduto, int qtdeDevolvida) throws Exception {
 
         Optional<Pedido> op = pdao.findById(idPedido);
 
@@ -318,7 +293,4 @@ public class PedidoService {
             System.err.println("Ocorreu um erro ao atualizar a pontuação: " + e.getMessage());
         }
     }
-
-
-
 }
