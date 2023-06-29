@@ -18,7 +18,7 @@ public class ProcessarPagamentoService {
 
     public boolean realizarPagamento(int clientId, int carrinhoId, double valorTotal, String formaPagamento) {
         String url = "https://modulo-pagamento-production.up.railway.app/modulo-de-pagamentos/carrinho";
-        PagamentosCarrinhoDto pagamentoCarrinhoDto = new PagamentosCarrinhoDto(clientId, carrinhoId, valorTotal, formaPagamento);
+        var pagamentoCarrinhoDto = new PagamentosCarrinhoDto(clientId, carrinhoId, valorTotal, formaPagamento);
 
         HttpEntity<PagamentosCarrinhoDto> requestEntity = new HttpEntity<>(pagamentoCarrinhoDto);
         ResponseEntity<Boolean> response = rest.exchange(url, HttpMethod.POST, requestEntity, Boolean.class);

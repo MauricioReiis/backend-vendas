@@ -44,7 +44,6 @@ public class PedidoService {
     @Autowired
     ProcessarPagamentoService processarPagamentoService;
 
-
     public Object buscarPedidoPeloId(int id) {
         Optional<Pedido> op = pdao.findById(id);
         if (op.isPresent()) {
@@ -58,7 +57,6 @@ public class PedidoService {
                     .build();
         }
     }
-
 
     public PedidoStatusDto realizarPedido(Pedido pedidoJson) throws Exception {
 
@@ -105,10 +103,7 @@ public class PedidoService {
         }
 
         pedido.setItensPedido(itensPedido);
-
-
         pdao.save(pedido);
-
 
         List<Integer> idsProduto = new ArrayList<>();
         for (ItemPedido itemPedido : pedido.getItensPedido()) {
@@ -176,18 +171,16 @@ public class PedidoService {
             produtoService.verificarPrazoDevolucao(dataDev, qtdeProduto);
 
 
-                // verificar se o produto existe
+            // verificar se o produto existe
+            if(!produtoService.validarProdutoExistente(idProduto)){
+                throw new Exception("Produto informado não existe!");
+            } else{
                 // verificar se a quantidade do produto é igual a quantidade do pedido
 
-
-
+            }
 
             if (!produtoService.verificarEstoque(idProduto, qtdeProduto)) {
                 throw new Exception("Quantidade indisponível em estoque!");
-            }
-
-            if (!produtoService.validarProdutoExistente(idProduto)) {
-                throw new Exception("Produto informado não existe!");
             }
 
             if (!produtoService.atualizarEstoque(idProduto, qtdeProduto)) {
@@ -211,7 +204,7 @@ public class PedidoService {
                     .build();
         } else {
             return PedidoStatusDto.builder()
-                    .status("Falha ao devolvido o pedido")
+                    .status("Falha ao devolver o pedido")
                     .build();
 
         }
