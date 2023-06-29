@@ -89,12 +89,12 @@ public class PedidoService {
                 return "Id de produto inexistente!";
             }
 
-            int validarEstoque = produtoService.verificarEstoqueDisponível(itemJson.getIdProduto(), itemJson.getQuantidade());
+            if (!produtoService.verificarEstoque(itemJson.getIdProduto(), itemJson.getQuantidade())){
+                throw new Exception("Quantidade indisponível em estoque!");
+            }
 
-            if (validarEstoque == 1) {
-                return "Id de produto inexistente!";
-            } else if (validarEstoque == 3) {
-                throw new Exception("Quantidade de produto indisponível!");
+            if (!produtoService.atualizarEstoque(itemJson.getIdProduto(), itemJson.getQuantidade())) {
+                throw new Exception("Não foi possível atualizar o estoque!");
             }
 
             ItemPedido itemPedido = new ItemPedido();
@@ -102,7 +102,6 @@ public class PedidoService {
             itemPedido.setIdProduto(itemJson.getIdProduto());
             itemPedido.setQuantidade(itemJson.getQuantidade());
             itensPedido.add(itemPedido);
-
         }
 
         pedido.setItensPedido(itensPedido);
@@ -185,7 +184,7 @@ public class PedidoService {
             pedidoDevolvido.setCodigoProduto(idProduto);
             pedidoDevolvido.setQtdeDevolvida(qtdeProduto);
             pedidoDevolvido.setDataDevolucao(dataDev);
-            verificarPrazoDevolucao(dataDev, qtdeProduto);
+            produtoService.verificarPrazoDevolucao(dataDev, qtdeProduto);
 
             boolean estoqueSuficiente = true;
             boolean produtoEncontrado = false;
@@ -209,11 +208,13 @@ public class PedidoService {
 
             if (!produtoEncontrado) {
                 throw new Exception("Produto não encontrado no pedido!");
-            } else if (!estoqueSuficiente) {
+            }
+
+            if (!estoqueSuficiente) {
                 throw new Exception("Quantidade devolvida maior do que a registrada no pedido!");
             }
 
-            if (!verificarEstoque(idProduto, qtdeProduto)) {
+            if (!produtoService.verificarEstoque(idProduto, qtdeProduto)) {
                 throw new Exception("Quantidade indisponível em estoque!");
             }
 
@@ -221,38 +222,12 @@ public class PedidoService {
                 throw new Exception("Produto informado não existe!");
             }
 
-            if (!atualizarEstoque(idProduto, qtdeProduto)) {
+            if (!produtoService.atualizarEstoque(idProduto, qtdeProduto)) {
                 throw new Exception("Não foi possível atualizar o estoque!");
             }
 
         } else {
             throw new Exception("Pedido não encontrado.");
-        }
-    }
-
-    public boolean verificarEstoque(int idProduto, int qtdeProduto) {
-        String url = "https://gateway-sgeu.up.railway.app/compras/produto/verificar/" + idProduto;
-        ResponseEntity<EstoqueResponseDto> resp = rest.getForEntity(url, EstoqueResponseDto.class);
-        EstoqueResponseDto estoqueResponse = resp.getBody();
-
-        return estoqueResponse != null && estoqueResponse.isStatus() && estoqueResponse.getQuantidade() >= qtdeProduto;
-    }
-
-    public boolean atualizarEstoque(int cdProduto, int qtdeDevolvida) {
-        String url = "https://compra-sgeu.up.railway.app/estoque/debitar/" + cdProduto + "/" + qtdeDevolvida;
-        ResponseEntity<CompraProdutoRetirarDto> resp = rest.getForEntity(url, CompraProdutoRetirarDto.class);
-        CompraProdutoRetirarDto c = resp.getBody();
-
-        return c != null && c.isStatus();
-    }
-
-    public static void verificarPrazoDevolucao(LocalDate dataDevolucao, int diasExpiracao) throws Exception {
-        LocalDate dataAtual = LocalDate.now();
-        long diferencaDias = (ChronoUnit.DAYS.between(dataDevolucao, dataAtual) * -1);
-
-        if (diferencaDias <= diasExpiracao) {
-        } else {
-            throw new Exception("O prazo para devolução expirou.");
         }
     }
 
